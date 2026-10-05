@@ -26,6 +26,8 @@ Run from the repo root.
 - `npm run format` rewrites files with the Biome formatter.
 - `npm run typecheck` type-checks the app and every workspace.
 - `npm run qa` runs the QA script (`scripts/qa.sh`): Biome, typecheck, build, Vitest, Playwright.
+- `npm run db:generate` writes a migration from `lib/schema.ts`; `npm run db:migrate` applies pending migrations to `DATABASE_URL`.
+- `npm run db:reset` deletes the local database file and migrates a fresh one.
 
 ## Definition of done
 
@@ -35,8 +37,16 @@ Run from the repo root.
 
 ## Verify, don't recall
 
-- Next.js, React, Tailwind, TypeScript and Biome here are newer than your training data.
-- Check APIs against current docs (`node_modules/next/dist/docs/` for Next.js) before writing code, not against memory.
+- Next.js, React, Tailwind, TypeScript, Biome and Drizzle here are newer than your training data.
+- Check APIs against current docs before writing code, not against memory; when docs and installed types disagree, the installed types win.
+
+## Researching docs
+
+- Next.js: `node_modules/next/dist/docs/`, exact for the installed version.
+- Libraries with a vendor `llms.txt` (Drizzle: https://orm.drizzle.team/llms.txt, full text at `llms-full.txt`): start there and follow its links.
+- Mastra and CopilotKit: the installed skills in `.claude/skills/`, the vendors' own playbooks.
+- Anything else: the `ctx7` CLI from the `find-docs` skill (`npx ctx7@latest library <name> "<query>"`).
+- Then confirm signatures in the installed package's `.d.ts` files under `node_modules/`.
 
 ## Tech docs
 
@@ -51,6 +61,7 @@ Index:
 
 - [workspaces.md](tech-docs/workspaces.md) — the npm workspace layout and why it exists before its content does.
 - [testing.md](tech-docs/testing.md) — test strategy, the QA script, CI, and the gotchas of running e2e next to `npm run dev`.
+- [database.md](tech-docs/database.md) — Drizzle on SQLite, the single `lib/db.ts` seam, migrations, and per-run temp databases.
 
 ## Keeping this map current
 

@@ -38,7 +38,8 @@ export default defineConfig({
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
-    command: `npx next dev --port ${port}`,
+    // Migrate the throwaway database first; both commands see the DATABASE_URL below.
+    command: `npx drizzle-kit migrate && npx next dev --port ${port}`,
     url: baseURL,
     // Always our own server: never test against a developer's `npm run dev`.
     reuseExistingServer: false,
