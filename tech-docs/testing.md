@@ -34,6 +34,7 @@
 - Next 16 locks its dist dir, so a second `next dev` in the same folder refuses to start; the e2e server builds into `.next-e2e/` via `NEXT_DIST_DIR` (read in `next.config.ts`).
 - Playwright asks the OS for a free port and passes it to its workers through `E2E_PORT`; set `E2E_PORT` or `E2E_DIST_DIR` to pin them, e.g. for a second checkout.
 - The e2e server gets `DATABASE_URL` pointing at a fresh temp SQLite file per run (override with `E2E_DATABASE_URL`), migrated before `next dev` starts; Next.js prefers `process.env` over `.env`, so `data/app.db` is never touched.
+- `cli/test/cli.test.ts` starts its own `next dev` (dist dir `.next-cli`) from Vitest; see `cli.md`.
 - `reuseExistingServer` is off on purpose: e2e tests must never run against a developer's `npm run dev`.
 - The e2e server also gets `BETTER_AUTH_URL` set to its own URL, because Better Auth rejects requests from other origins.
 - Next.js renders a hidden `role="alert"` route announcer, so scope alert locators (`page.locator("form").getByRole("alert")`).

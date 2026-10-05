@@ -16,6 +16,7 @@ coverage/
 # next.js
 /.next/
 /.next-e2e/
+/.next-cli/
 /out/
 
 # build output (root and workspaces)
@@ -72,3 +73,6 @@ next-env.d.ts
 
 # QA script logs
 /.qa/
+
+# CLI build output
+/cli/dist/

@@ -1,7 +1,6 @@
 import "server-only";
+import type { CurrentUser } from "@todo-cat/contract";
 import { auth } from "./auth";
-
-export type CurrentUser = { id: string; name: string; email: string };
 
 // The only place that reads sessions. Accepts a session cookie or an
 // `Authorization: Bearer <token>` header; every adapter (pages, REST, agent tools, MCP) uses it.

@@ -5,7 +5,8 @@
 - Better Auth with email and password only, pinned exactly to 1.7.7 (`better-auth`, `@better-auth/drizzle-adapter`, and the `auth` CLI as a dev dependency).
 - `lib/auth.ts` is the server instance on `lib/db.ts`; `app/api/auth/[...all]/route.ts` mounts it; `lib/auth-client.ts` is the browser client the forms use.
 - Options live in `lib/auth-options.ts` (plugins, email and password, the database adapter factory) and are shared by the app, the schema CLI and the tests.
-- Plugins enabled now for later steps: `bearer` (REST API and CLI send `Authorization: Bearer <session token>`) and `deviceAuthorization` (CLI login like `gh auth login`, verification page at `/device`, not built yet).
+- `bearer`: the REST API and the CLI send `Authorization: Bearer <session token>`.
+- `deviceAuthorization`: the CLI logs in like `gh auth login`; `validateClient` accepts only `CLI_CLIENT_ID`, and signed-in users approve or deny codes on `/device` (`app/device/`), see `cli.md`.
 - `BETTER_AUTH_SECRET` and `BETTER_AUTH_URL` come from the environment; Better Auth reads them itself.
 
 ## The one session seam
@@ -13,7 +14,8 @@
 - `lib/session.ts` is the only code that reads sessions: `getCurrentUser(request | headers)` and `getUserId(request | headers)` return the user (or its id) for a session cookie or a bearer token, else `null`.
 - Every adapter uses it: pages now, REST, agent tools and MCP later; nothing else calls `auth.api.getSession`.
 - Pages check the session on the server (`app/page.tsx` redirects to `/login`); client-side state is only UX, never the gate.
-- `/login` and `/signup` redirect signed-in users to `/`.
+- `/login` and `/signup` take `?next=` (local paths only, `lib/safe-next.ts`) and send signed-in users there, so `/device` survives the detour through sign-in.
+- `/device` follows RFC 8628's approval rules: it shows the client, the account and the code, needs an explicit Approve or Deny, and warns against codes sent by someone else.
 
 ## Schema
 

@@ -1,4 +1,5 @@
 import { drizzleAdapter } from "@better-auth/drizzle-adapter/relations-v2";
+import { CLI_CLIENT_ID } from "@todo-cat/contract";
 import type { BetterAuthOptions } from "better-auth";
 import { bearer, deviceAuthorization } from "better-auth/plugins";
 import * as authSchema from "./auth-schema";
@@ -10,8 +11,11 @@ export const authOptions = {
   plugins: [
     // The REST API and the CLI send `Authorization: Bearer <session token>`.
     bearer(),
-    // The CLI logs in like `gh auth login`; the /device page comes later.
-    deviceAuthorization({ verificationUri: "/device" }),
+    // The CLI logs in like `gh auth login`; signed-in users approve codes on /device.
+    deviceAuthorization({
+      verificationUri: "/device",
+      validateClient: (clientId) => clientId === CLI_CLIENT_ID,
+    }),
   ],
 } satisfies BetterAuthOptions;
 

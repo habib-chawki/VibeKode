@@ -11,7 +11,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 # todo-cat
 
 A to-do list web app kept by Lissie, a cat with attitude (an AI agent, coming later).
-Next.js 16 App Router at the repo root with email and password sign-in, a per-user todo service and its REST API, plus npm workspaces `contract/` (shared zod schemas) and `cli/` (the todo-cat CLI, still empty).
+Next.js 16 App Router at the repo root with email and password sign-in, a per-user todo service and its REST API, plus npm workspaces `contract/` (shared zod schemas) and `cli/` (the `todo-cat` CLI, a REST client).
 
 ## Commands
 
@@ -25,7 +25,8 @@ Run from the repo root.
 - `npm run lint` runs `biome check` (lint, format and import order); warnings count as errors.
 - `npm run format` rewrites files with the Biome formatter.
 - `npm run typecheck` type-checks the app and every workspace.
-- `npm run qa` runs the QA script (`scripts/qa.sh`): Biome, typecheck, build, Vitest, Playwright.
+- `npm run qa` runs the QA script (`scripts/qa.sh`): Biome, typecheck, build (app and CLI), Vitest, Playwright.
+- `npm run build -w cli` builds the CLI; `npx todo-cat --help` runs it against `TODO_CAT_URL` (default http://localhost:3000).
 - `npm run db:generate` writes a migration from `lib/schema.ts`; `npm run db:migrate` applies pending migrations to `DATABASE_URL`.
 - `npm run db:reset` deletes the local database file and migrates a fresh one.
 - `npm run db:seed` resets the demo user `demo@todo-cat.dev` (password `cat-person-2026`) to a dozen todos.
@@ -67,6 +68,7 @@ Index:
 - [testing.md](tech-docs/testing.md) — test strategy, the QA script, CI, and the gotchas of running e2e next to `npm run dev`.
 - [database.md](tech-docs/database.md) — Drizzle on SQLite, the single `lib/db.ts` seam, migrations, and per-run temp databases.
 - [rest-api.md](tech-docs/rest-api.md) — the `/api/todos` endpoints, status codes, and getting a bearer token with curl.
+- [cli.md](tech-docs/cli.md) — the `todo-cat` CLI: commands, exit codes, device login, credentials, and its end-to-end test.
 - [auth.md](tech-docs/auth.md) — Better Auth, the `lib/session.ts` seam every adapter uses, the generated schema, and the auth UI.
 
 ## Keeping this map current

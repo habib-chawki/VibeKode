@@ -8,7 +8,7 @@ import { TextField } from "@/components/ui/text-field";
 import { TextLink } from "@/components/ui/text-link";
 import { authClient } from "@/lib/auth-client";
 
-export function SignupForm() {
+export function SignupForm({ next }: { next: string }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -31,7 +31,7 @@ export function SignupForm() {
       setPending(false);
       return;
     }
-    router.push("/");
+    router.push(next);
     router.refresh();
   }
 
@@ -59,7 +59,14 @@ export function SignupForm() {
         {pending ? "Creating account…" : "Create account"}
       </Button>
       <p className="text-sm text-fur">
-        Already have an account? <TextLink href="/login">Sign in</TextLink>
+        Already have an account?{" "}
+        <TextLink
+          href={
+            next === "/" ? "/login" : `/login?next=${encodeURIComponent(next)}`
+          }
+        >
+          Sign in
+        </TextLink>
       </p>
     </form>
   );

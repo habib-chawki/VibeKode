@@ -1,6 +1,6 @@
 # REST API
 
-The REST adapter over the todo service (see `architecture.md`), for non-browser clients such as the CLI. Handlers live in `app/api/todos/route.ts` and `app/api/todos/[id]/route.ts`; the shared plumbing (user, parsing, error mapping) is `lib/rest.ts`.
+The REST adapter over the todo service (see `architecture.md`), for non-browser clients such as the CLI (`cli.md`). Handlers live in `app/api/todos/route.ts`, `app/api/todos/[id]/route.ts` and `app/api/me/route.ts`; the shared plumbing (user, parsing, error mapping) is `lib/rest.ts`.
 
 ## Endpoints
 
@@ -11,6 +11,7 @@ Schemas are from `@todo-cat/contract`; every error body is `ErrorBodySchema` (`{
 - `GET /api/todos/:id` → 200 `TodoSchema`; 401, 404.
 - `PATCH /api/todos/:id` body `TodoUpdateSchema` (`dueDate: null` clears it) → 200 `TodoSchema`; 400, 401, 404.
 - `DELETE /api/todos/:id` → 204 with an empty body; 401, 404.
+- `GET /api/me` → 200 `CurrentUserSchema` (who the token belongs to); 401.
 
 Status codes: 401 `unauthorized` (no or invalid token), 404 `todo-not-found`, 400 `validation-failed` (bad JSON, schema violation, unknown `status`).
 

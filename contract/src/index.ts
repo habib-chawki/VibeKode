@@ -50,6 +50,17 @@ export type TodoListFilter = z.infer<typeof TodoListFilterSchema>;
 /** What callers may pass before defaults apply, e.g. `{}` for open todos. */
 export type TodoListFilterInput = z.input<typeof TodoListFilterSchema>;
 
+/** The signed-in user, as returned by `GET /api/me`. */
+export const CurrentUserSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string(),
+});
+export type CurrentUser = z.infer<typeof CurrentUserSchema>;
+
+/** The OAuth client id the CLI sends in the device authorization flow. */
+export const CLI_CLIENT_ID = "todo-cat-cli";
+
 export const ErrorCodeSchema = z.enum([
   "todo-not-found",
   "validation-failed",

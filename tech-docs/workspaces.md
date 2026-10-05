@@ -4,7 +4,7 @@
 
 - The repo root is both the Next.js web app and the npm workspace root (`workspaces` in `package.json`).
 - `contract/` (package `@todo-cat/contract`) holds the zod schemas and types shared by the web app and the CLI (`contract/src/index.ts`).
-- `cli/` (package `todo-cat-cli`) will hold the todo-cat command-line client.
+- `cli/` (package `todo-cat-cli`) holds the `todo-cat` command-line client, bundled with esbuild (see `cli.md`).
 
 ## Why the workspaces exist before their content
 

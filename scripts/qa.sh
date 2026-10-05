@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# QA gate for agents, humans and CI: Biome, typecheck, build, Vitest, Playwright.
+# QA gate for agents, humans and CI: Biome, typecheck, build (app and CLI), Vitest, Playwright.
 # Passing sections only write to their log; failing sections print it. Exit 1 on any failure.
 # Usage: scripts/qa.sh   (or npm run qa). Logs go to $QA_LOG_DIR (default .qa/).
 set -uo pipefail
@@ -31,6 +31,7 @@ section() {
 section biome npx biome check --colors=off --error-on-warnings
 section typecheck npm run typecheck --silent
 section build npm run build --silent
+section cli-build npm run build -w cli --silent
 section vitest npx vitest run
 section playwright npx playwright test
 
