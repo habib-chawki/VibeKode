@@ -5,7 +5,7 @@
 - Drizzle ORM on SQLite through `@libsql/client`; `DATABASE_URL` (a `file:` URL, `file:./data/app.db` in dev) names the database.
 - `lib/db.ts` is the only module that opens the database and the only one that interprets `DATABASE_URL`; everything else imports `db` from it.
 - `lib/db.ts` imports `server-only`, so a Client Component that imports it fails the build.
-- The schema lives in `lib/schema.ts` and is still empty: todos arrive with the architecture, the auth tables with authentication.
+- The schema lives in `lib/schema.ts`; so far it re-exports the generated auth tables (`lib/auth-schema.ts`, see `auth.md`), and todos arrive with the architecture.
 - Migrations are code-first: change `lib/schema.ts`, run `npm run db:generate`, commit the generated folder under `drizzle/`, run `npm run db:migrate`.
 
 ## Why
@@ -28,7 +28,7 @@
 
 ## Gotchas
 
-- The migrator scans `drizzle/` and throws if the folder is missing, so `drizzle/.gitkeep` keeps it in git before the first migration.
+- The migrator scans `drizzle/` and throws if the folder is missing; `drizzle/.gitkeep` keeps it in git even without migrations.
 - The docs show `migrate(db)`, but the installed `drizzle-orm/libsql/migrator` requires `{ migrationsFolder }`; trust the `.d.ts`.
 - `server-only` throws outside Next's server build, so `vitest.config.mts` aliases it to the package's `empty.js`.
 - Database tests need `// @vitest-environment node` on their first line; the default jsdom environment is for components.

@@ -11,7 +11,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 # todo-cat
 
 A to-do list web app kept by Lissie, a cat with attitude (an AI agent, coming later).
-Next.js 16 App Router at the repo root, plus npm workspaces `contract/` (shared zod schemas) and `cli/` (the todo-cat CLI), both still empty.
+Next.js 16 App Router at the repo root with email and password sign-in, plus npm workspaces `contract/` (shared zod schemas) and `cli/` (the todo-cat CLI), both still empty.
 
 ## Commands
 
@@ -28,6 +28,7 @@ Run from the repo root.
 - `npm run qa` runs the QA script (`scripts/qa.sh`): Biome, typecheck, build, Vitest, Playwright.
 - `npm run db:generate` writes a migration from `lib/schema.ts`; `npm run db:migrate` applies pending migrations to `DATABASE_URL`.
 - `npm run db:reset` deletes the local database file and migrates a fresh one.
+- `npm run auth:generate` regenerates `lib/auth-schema.ts` from the Better Auth config; follow it with `npm run db:generate`.
 
 ## Definition of done
 
@@ -44,6 +45,7 @@ Run from the repo root.
 
 - Next.js: `node_modules/next/dist/docs/`, exact for the installed version.
 - Libraries with a vendor `llms.txt` (Drizzle: https://orm.drizzle.team/llms.txt, full text at `llms-full.txt`): start there and follow its links.
+- Better Auth: https://better-auth.com/llms.txt, then the per-page `.md` docs it links to.
 - Mastra and CopilotKit: the installed skills in `.claude/skills/`, the vendors' own playbooks.
 - Anything else: the `ctx7` CLI from the `find-docs` skill (`npx ctx7@latest library <name> "<query>"`).
 - Then confirm signatures in the installed package's `.d.ts` files under `node_modules/`.
@@ -62,6 +64,7 @@ Index:
 - [workspaces.md](tech-docs/workspaces.md) — the npm workspace layout and why it exists before its content does.
 - [testing.md](tech-docs/testing.md) — test strategy, the QA script, CI, and the gotchas of running e2e next to `npm run dev`.
 - [database.md](tech-docs/database.md) — Drizzle on SQLite, the single `lib/db.ts` seam, migrations, and per-run temp databases.
+- [auth.md](tech-docs/auth.md) — Better Auth, the `lib/session.ts` seam every adapter uses, the generated schema, and the auth UI.
 
 ## Keeping this map current
 

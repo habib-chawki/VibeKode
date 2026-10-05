@@ -1,26 +1,38 @@
 @import "tailwindcss";
 
+/* "Russian Blue": Lissie's fur, her gold eyes, and ink for the words she judges. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --paper: #eef2f6;
+  --surface: #ffffff;
+  --fur: #5b6b7f;
+  --ink: #1f2a37;
+  --eye: #e3b23c;
+  --danger: #b3261e;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --paper: #18202b;
+    --surface: #222c39;
+    --fur: #9aa8b9;
+    --ink: #e8edf3;
+    --eye: #f0c45a;
+    --danger: #f2a49d;
   }
 }
 
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-fur: var(--fur);
+  --color-ink: var(--ink);
+  --color-eye: var(--eye);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-geist-sans);
+  --font-display: var(--font-bricolage);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
 }

@@ -47,6 +47,8 @@ export default defineConfig({
       NEXT_DIST_DIR: process.env.E2E_DIST_DIR ?? ".next-e2e",
       // Next.js doesn't let .env override variables already set in the process.
       DATABASE_URL: process.env.E2E_DATABASE_URL,
+      // Better Auth checks request origins against its base URL, so it must match the port.
+      BETTER_AUTH_URL: baseURL,
     },
   },
 });

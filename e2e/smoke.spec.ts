@@ -1,8 +1,7 @@
 import { expect, test } from "@playwright/test";
 
-test("home page loads in the browser", async ({ page }) => {
+test("signed-out visitors are sent to the sign-in page", async ({ page }) => {
   await page.goto("/");
-  await expect(
-    page.getByRole("heading", { level: 1, name: /to get started/i }),
-  ).toBeVisible();
+  await expect(page).toHaveURL(/\/login$/);
+  await expect(page.getByRole("button", { name: "Sign in" })).toBeVisible();
 });

@@ -35,6 +35,8 @@
 - Playwright asks the OS for a free port and passes it to its workers through `E2E_PORT`; set `E2E_PORT` or `E2E_DIST_DIR` to pin them, e.g. for a second checkout.
 - The e2e server gets `DATABASE_URL` pointing at a fresh temp SQLite file per run (override with `E2E_DATABASE_URL`), migrated before `next dev` starts; Next.js prefers `process.env` over `.env`, so `data/app.db` is never touched.
 - `reuseExistingServer` is off on purpose: e2e tests must never run against a developer's `npm run dev`.
+- The e2e server also gets `BETTER_AUTH_URL` set to its own URL, because Better Auth rejects requests from other origins.
+- Next.js renders a hidden `role="alert"` route announcer, so scope alert locators (`page.locator("form").getByRole("alert")`).
 - The first `next dev` with `.next-e2e/` adds its type folders to `tsconfig.json` and reformats the file; keep the entries and run `npm run format` so Biome passes.
 - Vite resolves the `@/*` alias itself (`resolve.tsconfigPaths`); the `vite-tsconfig-paths` plugin from the Next docs isn't needed.
 - Vitest runs without globals, so `vitest.setup.ts` registers Testing Library's `cleanup` explicitly.
