@@ -26,6 +26,12 @@ import { deviceLogin, revokeSession } from "./login";
 // todo-cat: a client of the REST API, for AI agents first and humans too.
 // stdout carries results (text, or JSON with --json); stderr carries progress and errors.
 
+// `todo-cat list | head` closes the pipe early; that's the reader's choice, not a crash.
+process.stdout.on("error", (error: NodeJS.ErrnoException) => {
+  if (error.code === "EPIPE") process.exit(0);
+  throw error;
+});
+
 const program = new Command("todo-cat")
   .description(
     "Lissie's to-do list from the terminal. A client of the todo-cat REST API.",

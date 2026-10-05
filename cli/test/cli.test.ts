@@ -252,6 +252,18 @@ describe("todo-cat against a real server", () => {
   });
 });
 
+test("output piped into a reader that closes early (like head) doesn't crash", async () => {
+  const child = spawn(process.execPath, [bin, "--help"]);
+  child.stdout.once("data", () => child.stdout.destroy()); // read one chunk, then hang up
+  let stderr = "";
+  child.stderr.on("data", (d) => {
+    stderr += d;
+  });
+  const code = await new Promise((done) => child.on("close", done));
+  expect(stderr).not.toContain("EPIPE");
+  expect(code).toBe(0);
+});
+
 test("an unreachable server exits 6 without hanging", async () => {
   const dir = mkdtempSync(join(tmpdir(), "todo-cat-unreachable-"));
   const dead = "http://127.0.0.1:9"; // discard port: nothing listens there
