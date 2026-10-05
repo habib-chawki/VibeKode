@@ -25,7 +25,7 @@
 
 ## UI
 
-- Shared form pieces live in `components/ui/` (`Button`, `TextField`, `FormError`, `TextLink`); pages compose them instead of repeating class strings.
+- Shared form pieces live in `components/ui/`; pages compose them instead of repeating class strings.
 - Theme tokens (`paper`, `surface`, `fur`, `ink`, `eye`, `danger`) are defined once in `app/globals.css`, with a dark-mode variant.
 - `components/lissie-says.tsx` is the auth pages' layout: Lissie's remark as the one loud element, the form beside it.
 
@@ -40,6 +40,6 @@
 - The Better Auth CLI can't load anything that imports `server-only`, so it runs on `auth.config.mts`, which uses `drizzle.mock()` instead of `lib/db.ts`.
 - Use the `relations-v2` adapter (`@better-auth/drizzle-adapter/relations-v2`): the default adapter and the CLI's `--adapter drizzle` flag both emit Drizzle relations v1, which Drizzle v1 no longer has; the configured v2 adapter makes the CLI emit `defineRelationsPart`.
 - `npm run auth:generate` runs `biome check --write` on the output, otherwise the generated import order fails lint.
-- Better Auth checks request origins against `BETTER_AUTH_URL`, so the e2e server gets `BETTER_AUTH_URL` set to its own random port.
 - A wrong password throws an `APIError` with status 401 and code `INVALID_EMAIL_OR_PASSWORD`; the sign-in form maps 401 to its own message.
-- Async Server Components (like `app/page.tsx`) can't render in Vitest; cover them with e2e tests.
+- Approving a device code takes two calls from the same signed-in session: `GET /api/auth/device?user_code=…` claims the code, then `POST /api/auth/device/approve`; requests with cookies but no `Origin` or `Referer` header get 403 `MISSING_OR_NULL_ORIGIN`.
+- Better Auth checks request origins against `BETTER_AUTH_URL`; test servers set it to their own URL (see `testing.md`).

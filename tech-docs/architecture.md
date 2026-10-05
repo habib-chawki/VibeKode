@@ -59,6 +59,7 @@ around it. Hexagonal (ports and adapters), without the ceremony.
 
 ## Where it lives
 
+- Built so far: the service, the contract, the REST adapter and the CLI. The pages only show the signed-in user (no todos yet); agent tools and MCP don't exist yet.
 - Service: `lib/todo-service.ts` (`listTodos`, `getTodo`, `addTodo`, `updateTodo`, `deleteTodo`, `TodoError`).
 - Table: `lib/todo-schema.ts`, re-exported from `lib/schema.ts`; migrations under `drizzle/`.
 - Contract: `contract/src/index.ts`, imported as `@todo-cat/contract`.
@@ -68,7 +69,8 @@ around it. Hexagonal (ports and adapters), without the ceremony.
 
 ## Decisions and gotchas
 
-- Ids are random UUIDs (`crypto.randomUUID()`): unguessable, but long to type, so a CLI may accept a unique prefix.
+- Ids are random UUIDs (`crypto.randomUUID()`): unguessable, but long to type; the CLI takes full ids only.
+- The service throws only `todo-not-found` (`TodoError`); `validation-failed` comes from contract parsing in the adapters (`lib/rest.ts`, the CLI).
 - `list` defaults to open todos; `done` and `all` are explicit.
 - List order: open before done, then due date ascending with undated last, then creation time.
 - Text search uses SQLite `LIKE` with `%` and `_` escaped; it is case-insensitive for ASCII letters only.

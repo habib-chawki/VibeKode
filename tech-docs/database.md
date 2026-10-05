@@ -30,11 +30,11 @@
 
 - Vitest: `lib/test-support.ts` (`setUpTestDatabase`) stubs `DATABASE_URL` to a temp file, migrates it, adds Better Auth's test helpers, and deletes it afterwards; modules that read the env are imported dynamically after it.
 - E2E: `playwright.config.mts` points `DATABASE_URL` at a fresh temp file and runs `drizzle-kit migrate` before `next dev`.
-- `drizzle.config.ts` and `scripts/db-reset.mjs` load `.env` with `process.loadEnvFile`, which, like Next.js, never overrides a variable that is already set.
+- `drizzle.config.ts`, `scripts/db-reset.mjs` and `scripts/db-seed.mts` load `.env` with `process.loadEnvFile`, which, like Next.js, never overrides a variable that is already set.
 
 ## Gotchas
 
-- The migrator scans `drizzle/` and throws if the folder is missing; `drizzle/.gitkeep` keeps it in git even without migrations.
+- The migrator throws if `drizzle/` is missing; keep `drizzle/.gitkeep`.
 - The docs show `migrate(db)`, but the installed `drizzle-orm/libsql/migrator` requires `{ migrationsFolder }`; trust the `.d.ts`.
 - `server-only` throws outside Next's server build, so `vitest.config.mts` aliases it to the package's `empty.js`.
 - Database tests need `// @vitest-environment node` on their first line; the default jsdom environment is for components.
