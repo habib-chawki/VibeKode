@@ -23,12 +23,18 @@ async function freePort(): Promise<number> {
 
 process.env.E2E_PORT ??= String(await freePort());
 // A throwaway SQLite file per run, so e2e never touches data/app.db.
-process.env.E2E_DATABASE_URL ??= `file:${join(mkdtempSync(join(tmpdir(), "todo-cat-e2e-")), "app.db")}`;
+if (!process.env.E2E_DATABASE_URL) {
+  const dir = mkdtempSync(join(tmpdir(), "todo-cat-e2e-"));
+  // Only a folder we created here gets deleted again (e2e/global-teardown.mts).
+  process.env.E2E_TEMP_DIR = dir;
+  process.env.E2E_DATABASE_URL = `file:${join(dir, "app.db")}`;
+}
 const port = Number(process.env.E2E_PORT);
 const baseURL = `http://localhost:${port}`;
 
 export default defineConfig({
   testDir: "./e2e",
+  globalTeardown: "./e2e/global-teardown.mts",
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: process.env.CI ? "github" : "list",
