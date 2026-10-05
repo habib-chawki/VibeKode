@@ -16,6 +16,9 @@ export const TodoSchema = z.object({
 });
 export type Todo = z.infer<typeof TodoSchema>;
 
+/** Response body of `GET /api/todos`. */
+export const TodoListSchema = z.array(TodoSchema);
+
 const TitleSchema = z.string().trim().min(1).max(200);
 
 export const NewTodoSchema = z.object({

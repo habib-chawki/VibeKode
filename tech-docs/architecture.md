@@ -62,6 +62,7 @@ around it. Hexagonal (ports and adapters), without the ceremony.
 - Service: `lib/todo-service.ts` (`listTodos`, `getTodo`, `addTodo`, `updateTodo`, `deleteTodo`, `TodoError`).
 - Table: `lib/todo-schema.ts`, re-exported from `lib/schema.ts`; migrations under `drizzle/`.
 - Contract: `contract/src/index.ts`, imported as `@todo-cat/contract`.
+- REST adapter: `app/api/todos/` with shared plumbing in `lib/rest.ts` (see `rest-api.md`).
 - Dev seed: `lib/seed-demo.ts`, run by `npm run db:seed` (`scripts/db-seed.mts`), and it goes through Better Auth and the service like any adapter.
 
 ## Decisions and gotchas
