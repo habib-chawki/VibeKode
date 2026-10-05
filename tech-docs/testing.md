@@ -12,10 +12,27 @@
 - `npm test` runs Vitest once; `npm run test:watch` keeps it watching.
 - `npm run test:e2e` runs Playwright; `npx playwright show-trace` opens a trace from `test-results/` after a CI retry.
 
+## QA script
+
+- `scripts/qa.sh` (`npm run qa`) is the one definition of "done" for agents, humans and CI.
+- Sections run in order (Biome, typecheck, build, Vitest, Playwright) and all of them run even after a failure, so one pass shows every problem.
+- Output is written for agents: one `PASS`/`FAIL` line per section, only failing output printed, a summary last, no colors, exit 1 on any failure.
+- Every section's full output lands in `.qa/<section>.log` (override with `QA_LOG_DIR`).
+- Biome runs with `--error-on-warnings`, because agents skip past warnings but not past a red section.
+- `npm run typecheck` checks the root tsconfig (which covers `contract/` and `cli/`) plus any workspace that defines its own `typecheck` script.
+
+## CI
+
+- `.github/workflows/ci.yml` runs `npm run qa` on every push and pull request with Node 24 and `npm ci`; there is no deployment.
+- `.env` is generated from `.env.example` with dummy values; real secrets never go into CI.
+- Playwright browsers are cached by Playwright version; on a cache hit only the system dependencies are installed.
+- On failure the job uploads `.qa/` and `test-results/` as the `qa-logs` artifact; `gh run view --log-failed` shows the same output.
+
 ## Gotchas
 
 - Next 16 locks its dist dir, so a second `next dev` in the same folder refuses to start; the e2e server builds into `.next-e2e/` via `NEXT_DIST_DIR` (read in `next.config.ts`).
 - Playwright asks the OS for a free port and passes it to its workers through `E2E_PORT`; set `E2E_PORT` or `E2E_DIST_DIR` to pin them, e.g. for a second checkout.
+- The e2e server gets `DATABASE_URL` pointing at a fresh temp SQLite file per run (override with `E2E_DATABASE_URL`); Next.js prefers `process.env` over `.env`, so `data/app.db` is never touched.
 - `reuseExistingServer` is off on purpose: e2e tests must never run against a developer's `npm run dev`.
 - The first `next dev` with `.next-e2e/` adds its type folders to `tsconfig.json` and reformats the file; keep the entries and run `npm run format` so Biome passes.
 - Vite resolves the `@/*` alias itself (`resolve.tsconfigPaths`); the `vite-tsconfig-paths` plugin from the Next docs isn't needed.

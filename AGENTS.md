@@ -22,8 +22,16 @@ Run from the repo root.
 - `npm run build` builds the app for production; `npm run start` serves that build.
 - `npm test` runs the Vitest unit and integration tests once.
 - `npm run test:e2e` runs the Playwright end-to-end tests (Chromium, own dev server on a free port).
-- `npm run lint` runs `biome check` (lint, format and import order) and must pass before every commit.
+- `npm run lint` runs `biome check` (lint, format and import order); warnings count as errors.
 - `npm run format` rewrites files with the Biome formatter.
+- `npm run typecheck` type-checks the app and every workspace.
+- `npm run qa` runs the QA script (`scripts/qa.sh`): Biome, typecheck, build, Vitest, Playwright.
+
+## Definition of done
+
+- Run `npm run qa` before you call a task done; it must end with `QA PASSED`.
+- When a section fails, fix the code; never silence the finding by disabling a rule, skipping a test, or loosening a config.
+- CI runs the same script on every push and pull request, so local green means CI green.
 
 ## Verify, don't recall
 
@@ -42,7 +50,7 @@ Run from the repo root.
 Index:
 
 - [workspaces.md](tech-docs/workspaces.md) — the npm workspace layout and why it exists before its content does.
-- [testing.md](tech-docs/testing.md) — test strategy, commands, and the gotchas of running e2e next to `npm run dev`.
+- [testing.md](tech-docs/testing.md) — test strategy, the QA script, CI, and the gotchas of running e2e next to `npm run dev`.
 
 ## Keeping this map current
 
