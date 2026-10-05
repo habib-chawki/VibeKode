@@ -32,6 +32,12 @@
 - `logout` deletes the local entry and revokes the session with `POST /api/auth/sign-out`.
 - The server is `http://localhost:3000` unless `TODO_CAT_URL` is set.
 
+## Skill for agents
+
+- `.claude/skills/todo-cat-cli/SKILL.md` teaches agents the workflows `--help` can't: check `whoami` first and never work around a missing login, look ids up by title, answer questions with `--json` and jq, pick the right date field, delete only on request.
+- It defers to `--help`; when a command, option or exit code changes here, update the skill in the same change.
+- It was evaluated with two realistic requests run by subagents that had only the skill and a shell.
+
 ## Testing
 
 - `cli/test/cli.test.ts` builds the CLI, starts `next dev` on a free port with a temp database and `NEXT_DIST_DIR=.next-cli`, points `XDG_CONFIG_HOME` at a temp folder, and runs login (code approved over HTTP with a test-utils session cookie), whoami, add, list, done, delete, logout, and whoami failing; it also checks file modes, server-side revocation, and that the token never appears in output.
