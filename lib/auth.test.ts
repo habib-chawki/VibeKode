@@ -1,47 +1,21 @@
 // @vitest-environment node
-import { mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
-import { betterAuth } from "better-auth";
-import { type TestHelpers, testUtils } from "better-auth/plugins";
-import { migrate } from "drizzle-orm/libsql/migrator";
-import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
+import type { TestHelpers } from "better-auth/plugins";
+import { afterAll, beforeAll, describe, expect, test } from "vitest";
+import { setUpTestDatabase } from "./test-support";
 
-const dir = mkdtempSync(join(tmpdir(), "todo-cat-auth-test-"));
-
-// Loaded after the env stubs, because lib/db.ts and lib/auth.ts read them on import.
+// Loaded after setUpTestDatabase, because lib/db.ts and lib/auth.ts read the env on import.
 let auth: typeof import("./auth").auth;
 let getUserId: typeof import("./session").getUserId;
 let helpers: TestHelpers;
-let closeDb: () => void;
+let tearDown: () => void;
 
 beforeAll(async () => {
-  vi.stubEnv("DATABASE_URL", `file:${join(dir, "test.db")}`);
-  vi.stubEnv("BETTER_AUTH_SECRET", "test-secret-at-least-32-characters-long");
-  vi.stubEnv("BETTER_AUTH_URL", "http://localhost:3000");
-
-  const { db } = await import("./db");
-  await migrate(db, { migrationsFolder: resolve("drizzle") });
-  closeDb = () => db.$client.close();
-
+  ({ helpers, tearDown } = await setUpTestDatabase());
   ({ auth } = await import("./auth"));
   ({ getUserId } = await import("./session"));
-
-  // testUtils stays out of the production config: a test-only instance on the same database.
-  const { authDatabase, authOptions } = await import("./auth-options");
-  const testAuth = betterAuth({
-    ...authOptions,
-    database: authDatabase(db),
-    plugins: [...authOptions.plugins, testUtils()],
-  });
-  helpers = (await testAuth.$context).test;
 });
 
-afterAll(() => {
-  closeDb?.();
-  vi.unstubAllEnvs();
-  rmSync(dir, { recursive: true, force: true });
-});
+afterAll(() => tearDown?.());
 
 const credentials = {
   name: "Lissie's Human",

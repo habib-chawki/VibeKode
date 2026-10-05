@@ -57,6 +57,23 @@ around it. Hexagonal (ports and adapters), without the ceremony.
 - **MCP**: over stdio inside the CLI (a REST client again), over HTTP inside the app
   (calls the service, like the REST routes).
 
+## Where it lives
+
+- Service: `lib/todo-service.ts` (`listTodos`, `getTodo`, `addTodo`, `updateTodo`, `deleteTodo`, `TodoError`).
+- Table: `lib/todo-schema.ts`, re-exported from `lib/schema.ts`; migrations under `drizzle/`.
+- Contract: `contract/src/index.ts`, imported as `@todo-cat/contract`.
+- Dev seed: `lib/seed-demo.ts`, run by `npm run db:seed` (`scripts/db-seed.mts`), and it goes through Better Auth and the service like any adapter.
+
+## Decisions and gotchas
+
+- Ids are random UUIDs (`crypto.randomUUID()`): unguessable, but long to type, so a CLI may accept a unique prefix.
+- `list` defaults to open todos; `done` and `all` are explicit.
+- List order: open before done, then due date ascending with undated last, then creation time.
+- Text search uses SQLite `LIKE` with `%` and `_` escaped; it is case-insensitive for ASCII letters only.
+- Service functions take an optional last `clock` (`{ now }`) used only by tests and the seed; adapters never pass it.
+- Marking a done todo done again keeps its first `completedAt`.
+- SQLite enforces the `todos` → `user` cascade (libsql enables foreign keys); a test covers it.
+
 ## Deliberately not done
 
 - No generic repository, unit of work, or DI container. The service module is the seam;
@@ -68,3 +85,4 @@ around it. Hexagonal (ports and adapters), without the ceremony.
 - The service is tested against a temp database with **two users for every use case**:
   one user never sees, changes, or deletes the other's todos.
 - Adapter tests cover only the mapping: 401 without a user, error codes, status codes.
+- `lib/todo-service.test.ts` is that suite; `lib/test-support.ts` sets up the temp database and test users.

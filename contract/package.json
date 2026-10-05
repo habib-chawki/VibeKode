@@ -1,5 +1,12 @@
 {
   "name": "@todo-cat/contract",
   "version": "0.1.0",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "zod": "4.6.5"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  }
 }
