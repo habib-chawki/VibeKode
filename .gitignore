@@ -15,6 +15,7 @@ coverage/
 
 # next.js
 /.next/
+/.next-e2e/
 /out/
 
 # build output (root and workspaces)
@@ -62,3 +63,9 @@ next-env.d.ts
 
 # impeccable engine binary (platform-specific, downloaded on first use)
 .claude/skills/impeccable/scripts/bin/
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
