@@ -20,6 +20,7 @@
 - Every section's full output lands in `.qa/<section>.log` (override with `QA_LOG_DIR`).
 - Biome runs with `--error-on-warnings`, because agents skip past warnings but not past a red section.
 - `npm run typecheck` checks the root tsconfig (which covers `contract/` and `cli/`) plus any workspace that defines its own `typecheck` script.
+- It runs `next typegen` first: globals like `LayoutProps` and `next-env.d.ts` are generated, not committed, so a bare `tsc` passes locally after `next dev` but fails on a fresh checkout.
 
 ## CI
 
