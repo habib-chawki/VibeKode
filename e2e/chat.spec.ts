@@ -20,6 +20,12 @@ test("the chat loads for a signed-in user and the runtime guards its routes", as
   expect((await page.request.get("/api/copilotkit/threads")).status()).toBe(
     404,
   );
+
+  // The read-only sidebar shows the user's list (written here through the REST API).
+  await expect(page.getByTestId("todo-sidebar")).toContainText("Nothing open");
+  await page.request.post("/api/todos", { data: { title: "Brush Lissie" } });
+  await page.reload();
+  await expect(page.getByTestId("todo-sidebar")).toContainText("Brush Lissie");
 });
 
 test("the runtime rejects requests without a session", async ({ request }) => {

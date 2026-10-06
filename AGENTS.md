@@ -10,7 +10,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 # todo-cat
 
-A to-do list web app kept by Lissie, a cat with attitude: a Mastra agent the user chats with on `/` through CopilotKit.
+A to-do list web app kept by Lissie, a cat with attitude: a Mastra agent with tools on the user's list, chatted with on `/` through CopilotKit.
 Next.js 16 App Router at the repo root with email and password sign-in, a per-user todo service and its REST API, plus npm workspaces `contract/` (shared zod schemas) and `cli/` (the `todo-cat` CLI, a REST client).
 
 ## First-time setup
@@ -74,7 +74,7 @@ Index:
 - [database.md](tech-docs/database.md) — Drizzle on SQLite, the single `lib/db.ts` seam, migrations, seeding, and per-run temp databases.
 - [auth.md](tech-docs/auth.md) — Better Auth, the `lib/session.ts` seam every adapter uses, the generated schema, and device approval.
 - [rest-api.md](tech-docs/rest-api.md) — the `/api/todos` endpoints, status codes, and getting a bearer token with curl.
-- [agent.md](tech-docs/agent.md) — Lissie: the Mastra agent, per-user memory, the guarded CopilotKit runtime, and keeping tokens away from the model.
+- [agent.md](tech-docs/agent.md) — Lissie: the Mastra agent, her tools and how the user id reaches them, per-user memory, the guarded CopilotKit runtime.
 - [cli.md](tech-docs/cli.md) — the `todo-cat` CLI: agent conventions, device login, credentials, its skill and its end-to-end test.
 
 ## Keeping this map current
