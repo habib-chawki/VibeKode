@@ -40,6 +40,8 @@ function describe(
     case "listTodos":
       if (!done) return "Looking at your list…";
       return `Looked at your list (${todos?.length ?? 0} ${args.status === "done" ? "done" : args.status === "all" ? "todos" : "open"})`;
+    case "showProgress":
+      return done ? "Counted your list" : "Counting your list…";
     default:
       return done ? `✓ ${name}` : `${name}…`;
   }

@@ -2,6 +2,7 @@
 
 import { CopilotChat, CopilotKitProvider } from "@copilotkit/react-core/v2";
 import { useEffect, useState } from "react";
+import { lissieCatalog } from "./lissie-catalog";
 import { TodoList } from "./todo-list";
 import { lissieToolRenderers } from "./tool-call-line";
 
@@ -20,6 +21,9 @@ function usePrefersDark(): boolean {
   return dark;
 }
 
+// Module level: a stable prop.
+const A2UI = { catalog: lissieCatalog, includeSchema: false };
+
 export function LissieChat({ threadId }: { threadId: string }) {
   const dark = usePrefersDark();
   return (
@@ -29,6 +33,9 @@ export function LissieChat({ threadId }: { threadId: string }) {
       useSingleEndpoint={false}
       enableInspector={process.env.NODE_ENV === "development"}
       renderToolCalls={lissieToolRenderers}
+      // Renders the A2UI cards Lissie's tools return. No schema or generation guidelines
+      // go to the agent: nothing on the server generates UI.
+      a2ui={A2UI}
     >
       <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_minmax(0,14rem)] gap-4 md:grid-cols-[minmax(0,1fr)_16rem] md:grid-rows-1">
         <div

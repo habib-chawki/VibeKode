@@ -101,6 +101,9 @@ function lissieFor(userId: string): MastraAgent {
     agent: getLissie(),
     resourceId: userId,
     requestContext,
+    // The bridge would otherwise add a UI-generating sub-agent tool whenever a request's
+    // forwardedProps ask for one; Lissie's cards come from her own tools only.
+    a2ui: { injectA2UITool: false },
   });
 }
 
@@ -122,6 +125,9 @@ export async function handleCopilotRequest(
     // @ag-ui/mastra passes them on to the model provider: a CLI user's session token
     // would reach OpenRouter. Forward nothing.
     forwardHeaders: { deny: ["authorization"], denyPrefixes: ["x-"] },
+    // A2UI renders the `a2ui_operations` Lissie's tools return (showProgress). Without an
+    // explicit false, a browser that announces a catalog gets a render_a2ui tool injected.
+    a2ui: { agents: ["lissie"], injectA2UITool: false },
   });
 
   // Belt and braces: the runtime never sees the caller's credentials at all.
