@@ -11,14 +11,15 @@ export default async function Home() {
   if (!user) redirect("/login");
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-6 py-10">
-      <header className="flex items-center justify-between gap-4">
+    // Viewport-high: the header and the chat input stay put, only the messages scroll.
+    <main className="mx-auto flex h-dvh w-full max-w-3xl flex-col gap-6 overflow-hidden px-6 py-6 md:py-10">
+      <header className="flex shrink-0 items-center justify-between gap-4">
         <p className="min-w-0 truncate text-sm text-fur" title={user.email}>
           Signed in as {user.email}
         </p>
         <SignOutButton />
       </header>
-      <h1 className="max-w-[20ch] font-display text-4xl leading-[1.05] font-bold tracking-tight text-ink md:text-5xl">
+      <h1 className="max-w-[20ch] shrink-0 font-display text-3xl leading-[1.05] font-bold tracking-tight text-ink md:text-5xl">
         Hello, {user.name}. Lissie has been expecting you.
       </h1>
       <LissieChat threadId={lissieThreadId(user.id)} />

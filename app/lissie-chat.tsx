@@ -28,12 +28,12 @@ export function LissieChat({ threadId }: { threadId: string }) {
       enableInspector={process.env.NODE_ENV === "development"}
     >
       <div
-        className={`lissie-chat ${dark ? "dark" : ""} flex min-h-[28rem] flex-1 flex-col overflow-hidden rounded-xl border border-fur/30 bg-surface`}
+        className={`lissie-chat ${dark ? "dark" : ""} flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-fur/30 bg-surface`}
       >
         <CopilotChat
           agentId="lissie"
           threadId={threadId}
-          className="flex-1"
+          className="h-full min-h-0"
           labels={{
             chatInputPlaceholder:
               "Tell Lissie what's on your mind (about the list)",
