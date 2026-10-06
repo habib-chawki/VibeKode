@@ -20,7 +20,7 @@
 ## In the browser
 
 - `app/tool-call-line.tsx` renders every tool call as one line (`✓ Added "…"`, `✓ Done: "…"`), live and after a replay; CopilotKit draws nothing for a tool without a renderer, so the `"*"` renderer is required.
-- `app/todo-sidebar.tsx` is a read-only list from `GET /api/todos`, refreshed on every non-list tool result and at the end of each run (`useAgent` + `agent.subscribe`); Lissie is the browser's write path for now.
+- `app/todo-list.tsx` (see `ui.md`) refetches on every non-list tool result and at the end of each run (`useAgent` + `agent.subscribe`), so Lissie's changes show up in the list.
 
 ## Memory scoping is authorization
 
