@@ -24,5 +24,5 @@ test("asking Lissie to add buy milk puts it in the sidebar", async ({
       timeout: 90_000,
     },
   );
-  await expect(page.getByTestId("todo-sidebar")).toContainText(/buy milk/i);
+  await expect(page.getByTestId("todo-list")).toContainText(/buy milk/i);
 });

@@ -22,10 +22,10 @@ test("the chat loads for a signed-in user and the runtime guards its routes", as
   );
 
   // The read-only sidebar shows the user's list (written here through the REST API).
-  await expect(page.getByTestId("todo-sidebar")).toContainText("Nothing open");
+  await expect(page.getByTestId("todo-list")).toContainText("Nothing open");
   await page.request.post("/api/todos", { data: { title: "Brush Lissie" } });
   await page.reload();
-  await expect(page.getByTestId("todo-sidebar")).toContainText("Brush Lissie");
+  await expect(page.getByTestId("todo-list")).toContainText("Brush Lissie");
 });
 
 test("the runtime rejects requests without a session", async ({ request }) => {

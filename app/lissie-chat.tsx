@@ -2,7 +2,7 @@
 
 import { CopilotChat, CopilotKitProvider } from "@copilotkit/react-core/v2";
 import { useEffect, useState } from "react";
-import { TodoSidebar } from "./todo-sidebar";
+import { TodoList } from "./todo-list";
 import { lissieToolRenderers } from "./tool-call-line";
 
 // Lissie's chat. The runtime only lets this user run and connect on their own thread
@@ -30,7 +30,7 @@ export function LissieChat({ threadId }: { threadId: string }) {
       enableInspector={process.env.NODE_ENV === "development"}
       renderToolCalls={lissieToolRenderers}
     >
-      <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_minmax(0,9rem)] gap-4 md:grid-cols-[minmax(0,1fr)_16rem] md:grid-rows-1">
+      <div className="grid min-h-0 flex-1 grid-rows-[minmax(0,1fr)_minmax(0,14rem)] gap-4 md:grid-cols-[minmax(0,1fr)_16rem] md:grid-rows-1">
         <div
           className={`lissie-chat ${dark ? "dark" : ""} flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-fur/30 bg-surface`}
         >
@@ -39,12 +39,11 @@ export function LissieChat({ threadId }: { threadId: string }) {
             threadId={threadId}
             className="h-full min-h-0"
             labels={{
-              chatInputPlaceholder:
-                "Tell Lissie what's on your mind (about the list)",
+              chatInputPlaceholder: "Ask Lissie about your list",
             }}
           />
         </div>
-        <TodoSidebar />
+        <TodoList />
       </div>
     </CopilotKitProvider>
   );

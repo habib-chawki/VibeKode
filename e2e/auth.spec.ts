@@ -32,5 +32,5 @@ test("sign up, sign out, and sign in again", async ({ page }) => {
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByText(`Signed in as ${email}`)).toBeVisible();
+  await expect(page.locator("header").getByText(email)).toBeVisible();
 });
