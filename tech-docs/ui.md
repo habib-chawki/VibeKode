@@ -12,6 +12,7 @@ Lissie's desk, where every todo is one paw-swipe from the floor. Chosen with the
 
 ## Where things live
 
+- Product context for design work (users, Lissie's voice, principles): `PRODUCT.md` at the repo root, read by the `impeccable` skill.
 - Tokens: `app/globals.css` (`:root` for light, the `prefers-color-scheme: dark` block for dark), exposed to Tailwind via `@theme inline` (`bg-paper`, `text-fur`, `accent-eye`, `text-nose`…).
 - Shared pieces: `components/ui/` (`Button`, `TextField`, `FormError`, `TextLink`); `components/lissie-says.tsx` is the auth and device pages' layout.
 - Home: `app/page.tsx` (header with the `todo·cat` wordmark), `app/lissie-chat.tsx` (provider, chat, layout), `app/todo-list.tsx` (the list), `app/tool-call-line.tsx` (tool-call lines).
