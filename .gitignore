@@ -79,3 +79,6 @@ next-env.d.ts
 
 # Claude Code worktrees
 .claude/worktrees/
+
+# impeccable critique snapshots (per-machine state)
+.impeccable/
