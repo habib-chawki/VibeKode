@@ -4,6 +4,7 @@ import { type FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/ui/form-error";
 import { TextField } from "@/components/ui/text-field";
+import { TextLink } from "@/components/ui/text-link";
 import { authClient } from "@/lib/auth-client";
 
 type Step = "enter" | "confirm" | "approved" | "denied";
@@ -12,6 +13,18 @@ type Step = "enter" | "confirm" | "approved" | "denied";
 function normalize(code: string): string {
   return code.trim().replace(/[\s-]/g, "").toUpperCase();
 }
+
+/** The code as `todo-cat login` prints it, so the two can be compared at a glance. */
+function asPrinted(code: string): string {
+  const plain = normalize(code);
+  return plain.length === 8 ? `${plain.slice(0, 4)}-${plain.slice(4)}` : plain;
+}
+
+const backToList = (
+  <TextLink href="/" className="self-start">
+    Back to your list
+  </TextLink>
+);
 
 export function DeviceApproval({
   initialCode,
@@ -62,18 +75,24 @@ export function DeviceApproval({
 
   if (step === "approved") {
     return (
-      <p className="text-lg text-ink">
-        Approved. The todo-cat CLI is signed in as {email}; go back to your
-        terminal.
-      </p>
+      <div className="flex flex-col gap-5">
+        <p role="status" className="text-lg text-ink">
+          Approved. The todo-cat CLI is signed in as {email}; go back to your
+          terminal.
+        </p>
+        {backToList}
+      </div>
     );
   }
   if (step === "denied") {
     return (
-      <p className="text-lg text-ink">
-        Denied. Nothing was signed in. If you didn't start this, you can ignore
-        it.
-      </p>
+      <div className="flex flex-col gap-5">
+        <p role="status" className="text-lg text-ink">
+          Denied. Nothing was signed in. If you didn't start this, you can
+          ignore it.
+        </p>
+        {backToList}
+      </div>
     );
   }
   if (step === "confirm") {
@@ -81,8 +100,10 @@ export function DeviceApproval({
       <div className="flex flex-col gap-5">
         <p className="text-base text-ink">
           The <strong>todo-cat CLI</strong> wants to read and change your todos
-          as <strong>{email}</strong>, with code{" "}
-          <code className="font-semibold">{normalize(code)}</code>.
+          as <strong>{email}</strong>, with this code:
+        </p>
+        <p className="rounded-lg border border-fur/40 bg-surface px-4 py-3 text-center font-mono text-2xl font-semibold tracking-[0.12em] text-ink">
+          {asPrinted(code)}
         </p>
         <p className="text-sm text-fur">
           Only approve if you just ran <code>todo-cat login</code> yourself and

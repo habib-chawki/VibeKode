@@ -2,24 +2,29 @@
 
 /* "Off the Table": Lissie's desk, where every todo is one paw-swipe from the floor.
    Fog paper and a near-white desk, slate fur and ink; her amber eyes only for focus and
-   checked boxes, her rose nose only for overdue and delete. See tech-docs/ui.md. */
+   checked boxes, her rose nose only for overdue, delete and errors. See tech-docs/ui.md. */
 :root {
+  color-scheme: light;
   --paper: #e9eef3;
   --surface: #f7f9fb;
   --fur: #56657a;
   --ink: #1c2533;
   --eye: #e0a526;
-  --nose: #c2566b;
-  --danger: var(--nose);
+  /* Her eye as a line on paper (focus rings, link underlines): bright amber is under 2:1
+     on fog, this deep amber 4:1 and up. */
+  --eye-line: #9a6a00;
+  --nose: #a83e55;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
+    color-scheme: dark;
     --paper: #141a23;
     --surface: #1d2531;
     --fur: #9aa7b8;
     --ink: #e6ecf2;
     --eye: #f2bc4b;
+    --eye-line: var(--eye);
     --nose: #ee8c9d;
   }
 }
@@ -30,7 +35,7 @@
   --color-fur: var(--fur);
   --color-ink: var(--ink);
   --color-eye: var(--eye);
-  --color-danger: var(--danger);
+  --color-eye-line: var(--eye-line);
   --color-nose: var(--nose);
   --font-sans: var(--font-geist-sans);
   --font-display: var(--font-bricolage);
@@ -38,6 +43,11 @@
 
 body {
   background: var(--paper);
+  color: var(--ink);
+}
+
+::selection {
+  background: color-mix(in oklab, var(--eye) 35%, transparent);
   color: var(--ink);
 }
 
