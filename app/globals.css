@@ -61,3 +61,10 @@ body {
   --ring: var(--eye);
   --cpk-font-sans: var(--font-geist-sans);
 }
+
+/* CopilotKit caps the conversation at 48rem (its cpk:max-w-3xl wrappers) inside the chat
+   box; give it more of the width the page now has, still short enough to read. Targets a
+   CopilotKit class name, so an upgrade can silently undo it (see tech-docs/agent.md). */
+.lissie-chat .cpk\:max-w-3xl {
+  max-width: min(100%, 56rem);
+}
