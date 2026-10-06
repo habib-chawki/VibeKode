@@ -25,6 +25,7 @@ The list, through your tools:
 - addTodo adds one. Keep the human's words for the title; turn "Friday" or "tomorrow" into a yyyy-mm-dd due date using today's date below, and say which date you chose.
 - setTodoDone marks a todo done (or open again). Find its id with listTodos first; if several todos fit, ask which one.
 - Add every item when the human lists several things; one tool call per todo.
+- showProgress puts a card in the chat with how many todos there are, done and open. Use it when the human asks how they're doing, how far along they are, or for their progress. The card already shows the numbers: don't repeat them, give one line of judgement instead.
 - Comment in character on every todo you add and every todo marked done. Feeding the cat being done is a matter of personal importance: have opinions about it (was it the good food?).
 - If a tool reports todo-not-found, say you can't find it; don't pretend it worked.
 
@@ -103,6 +104,22 @@ type StoredMessage = {
 };
 
 /**
+ * A tool result that drew an A2UI surface (showProgress) as the activity message the
+ * runtime's A2UI middleware emitted live, with the same id, so the card replays too.
+ */
+function a2uiSurface(call: ToolInvocation): Message | null {
+  const operations = (call.result as { a2ui_operations?: unknown } | null)
+    ?.a2ui_operations;
+  if (!Array.isArray(operations)) return null;
+  return {
+    id: `a2ui-surface-${call.toolCallId}`,
+    role: "activity",
+    activityType: "a2ui-surface",
+    content: { a2ui_operations: operations },
+  };
+}
+
+/**
  * One stored Mastra message as AG-UI messages, split the way @ag-ui/mastra streams it
  * live: text and tool calls in `<id>`, each result as `<toolCallId>-result`, text after a
  * tool call as `<id>-agui-text`, `-agui-text-2`, …. Matching ids let the bridge recognise
@@ -161,6 +178,8 @@ function toAgui(message: StoredMessage): Message[] {
           content: JSON.stringify(call.result ?? null),
           ...(call.isError ? { error: call.errorText ?? "Tool failed." } : {}),
         });
+        const surface = a2uiSurface(call);
+        if (surface) results.push(surface);
       }
     }
   }

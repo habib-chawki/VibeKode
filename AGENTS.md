@@ -76,7 +76,7 @@ Index:
 - [auth.md](tech-docs/auth.md) — Better Auth, the `lib/session.ts` seam every adapter uses, the generated schema, and device approval.
 - [rest-api.md](tech-docs/rest-api.md) — the `/api/todos` endpoints, status codes, and getting a bearer token with curl.
 - [ui.md](tech-docs/ui.md) — the "Off the Table" design direction, tokens, shared components, the list, and CopilotKit styling gotchas.
-- [agent.md](tech-docs/agent.md) — Lissie: the Mastra agent, her tools and how the user id reaches them, per-user memory, the guarded CopilotKit runtime.
+- [agent.md](tech-docs/agent.md) — Lissie: the Mastra agent, her tools and how the user id reaches them, per-user memory, the guarded CopilotKit runtime, A2UI cards.
 - [cli.md](tech-docs/cli.md) — the `todo-cat` CLI: agent conventions, device login, credentials, its skill and its end-to-end test.
 
 ## Keeping this map current

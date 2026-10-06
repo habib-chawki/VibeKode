@@ -50,6 +50,16 @@ export type TodoListFilter = z.infer<typeof TodoListFilterSchema>;
 /** What callers may pass before defaults apply, e.g. `{}` for open todos. */
 export type TodoListFilterInput = z.input<typeof TodoListFilterSchema>;
 
+const CountSchema = z.number().int().nonnegative();
+
+/** How far along a user's whole list is: `open` is `total - done`. */
+export const TodoProgressSchema = z.object({
+  total: CountSchema,
+  done: CountSchema,
+  open: CountSchema,
+});
+export type TodoProgress = z.infer<typeof TodoProgressSchema>;
+
 /** The signed-in user, as returned by `GET /api/me`. */
 export const CurrentUserSchema = z.object({
   id: z.string(),

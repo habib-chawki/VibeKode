@@ -6,7 +6,14 @@ import {
 import { createTool } from "@mastra/core/tools";
 import { NewTodoSchema, TodoListFilterSchema } from "@todo-cat/contract";
 import { z } from "zod";
-import { addTodo, listTodos, TodoError, updateTodo } from "./todo-service";
+import { progressOperations } from "./lissie-progress-card";
+import {
+  addTodo,
+  getProgress,
+  listTodos,
+  TodoError,
+  updateTodo,
+} from "./todo-service";
 
 // Lissie's tools: one more thin adapter on the todo service, like REST and the CLI.
 // The user is never an argument: lib/copilot-runtime.ts puts the session user into
@@ -68,8 +75,31 @@ export const setTodoDoneTool = createTool({
     })),
 });
 
+export const showProgressTool = createTool({
+  id: "showProgress",
+  description:
+    "Show the user a progress card for their whole list: how many todos there are, how many are done and how many are open. No input. The card shows the numbers; the result gives you the same numbers to comment on.",
+  inputSchema: z.object({}),
+  // The runtime's A2UI middleware draws any tool result with an `a2ui_operations` array
+  // as a card (lib/lissie-progress-card.ts); no model writes it, no second model call.
+  execute: async (_input, { requestContext }) =>
+    asResult(async () => {
+      const progress = await getProgress(sessionUser(requestContext));
+      return { ...progress, a2ui_operations: progressOperations(progress) };
+    }),
+  // The model needs the numbers (or the error), not the card's component tree.
+  toModelOutput: (output) => {
+    const { a2ui_operations: _card, ...rest } = output as Record<
+      string,
+      unknown
+    >;
+    return { type: "json", value: rest };
+  },
+});
+
 export const lissieTools = {
   listTodos: listTodosTool,
   addTodo: addTodoTool,
   setTodoDone: setTodoDoneTool,
+  showProgress: showProgressTool,
 };

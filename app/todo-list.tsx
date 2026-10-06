@@ -11,6 +11,9 @@ import { FormError } from "@/components/ui/form-error";
 
 const KNOCK_OFF_MS = 300;
 
+// Lissie's tools that only read the list: their results never need a refetch.
+const READ_ONLY_TOOLS = new Set(["listTodos", "showProgress"]);
+
 function localToday(): string {
   const d = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");
@@ -62,7 +65,7 @@ export function TodoList() {
         const call = messages
           .flatMap((m) => (m.role === "assistant" ? (m.toolCalls ?? []) : []))
           .find((c) => c.id === event.toolCallId);
-        if (call?.function.name !== "listTodos") refresh();
+        if (!call || !READ_ONLY_TOOLS.has(call.function.name)) refresh();
       },
       onRunFinalized: () => {
         refresh();

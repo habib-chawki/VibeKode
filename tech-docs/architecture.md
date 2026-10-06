@@ -17,7 +17,7 @@ around it. Hexagonal (ports and adapters), without the ceremony.
 - One module, `lib/todo-service.ts`, holds every todo query and rule. Nothing else
   touches the `todos` table.
 - Use cases, not tables: list (filter by status open/done/all and by text), get, add,
-  update (title, due date, done), delete.
+  update (title, due date, done), delete, progress (total, done, open in one aggregate query).
 - **Every function takes the user id first, and every query filters by it.** There is
   no function that reads or writes todos without an owner.
 - Another user's todo is "not found", never "forbidden": the API must not reveal that
@@ -38,7 +38,7 @@ around it. Hexagonal (ports and adapters), without the ceremony.
 ## The contract
 
 - The `contract/` workspace (`@todo-cat/contract`) holds the zod schemas for todos,
-  inputs, list filters, and the error body `{ error: { code, message } }`.
+  inputs, list filters, progress counts, and the error body `{ error: { code, message } }`.
 - Server and clients import the same schemas. The CLI parses every response with
   them, so a server change that breaks the shape fails loudly in the client.
 - Validation lives in the schemas, at the adapter boundary. The service trusts its
@@ -60,7 +60,7 @@ around it. Hexagonal (ports and adapters), without the ceremony.
 ## Where it lives
 
 - Built so far: the service, the contract, the REST adapter (also behind the web list), the CLI, and Lissie with her agent tools (`lib/lissie-tools.ts`, see `agent.md`); MCP doesn't exist yet.
-- Service: `lib/todo-service.ts` (`listTodos`, `getTodo`, `addTodo`, `updateTodo`, `deleteTodo`, `TodoError`).
+- Service: `lib/todo-service.ts` (`listTodos`, `getTodo`, `addTodo`, `updateTodo`, `deleteTodo`, `getProgress`, `TodoError`).
 - Table: `lib/todo-schema.ts`, re-exported from `lib/schema.ts`; migrations under `drizzle/`.
 - Contract: `contract/src/index.ts`, imported as `@todo-cat/contract`.
 - REST adapter: `app/api/todos/` with shared plumbing in `lib/rest.ts` (see `rest-api.md`).

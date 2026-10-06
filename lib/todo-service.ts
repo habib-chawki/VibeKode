@@ -4,9 +4,10 @@ import type {
   NewTodo,
   Todo,
   TodoListFilterInput,
+  TodoProgress,
   TodoUpdate,
 } from "@todo-cat/contract";
-import { and, asc, eq, type SQL, sql } from "drizzle-orm";
+import { and, asc, count, eq, type SQL, sql } from "drizzle-orm";
 import { db } from "./db";
 import { todos } from "./todo-schema";
 
@@ -72,6 +73,20 @@ export async function listTodos(
       asc(todos.createdAt),
     );
   return rows.map(toTodo);
+}
+
+/** Counts the user's whole list in one aggregate query; no rows are loaded. */
+export async function getProgress(userId: string): Promise<TodoProgress> {
+  const [row] = await db
+    .select({
+      total: count(),
+      done: count(sql`case when ${todos.done} then 1 end`),
+    })
+    .from(todos)
+    .where(eq(todos.userId, userId));
+  const total = row?.total ?? 0;
+  const done = row?.done ?? 0;
+  return { total, done, open: total - done };
 }
 
 export async function getTodo(userId: string, id: string): Promise<Todo> {
