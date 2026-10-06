@@ -17,7 +17,7 @@ export function TextField({ label, hint, id, ...props }: TextFieldProps) {
       <input
         id={inputId}
         aria-describedby={hintId}
-        className="rounded-lg border border-fur/40 bg-surface px-3 py-2.5 text-base text-ink placeholder:text-fur/70 focus-visible:border-ink focus-visible:outline-3 focus-visible:outline-offset-1 focus-visible:outline-eye"
+        className="h-11 rounded-lg border border-fur/75 bg-surface px-3 text-base text-ink placeholder:text-fur focus-visible:border-ink focus-visible:outline-3 focus-visible:outline-offset-1 focus-visible:outline-eye-line"
         {...props}
       />
       {hint ? (

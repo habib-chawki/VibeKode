@@ -10,13 +10,13 @@ test("add, check off, reopen and delete a todo", async ({ page }) => {
   await expect(page).toHaveURL(/\/$/);
 
   const list = page.getByTestId("todo-list");
-  await list.getByLabel("New todo").fill("Brush Lissie");
-  await list.getByLabel("Due date (optional)").fill("2026-12-24");
+  await list.getByLabel("Add a todo").fill("Brush Lissie");
+  await list.getByLabel("Due date (optional)").fill("2099-12-24");
   await list.getByRole("button", { name: "Add" }).click();
   const item = list
     .getByTestId("todo-item")
     .filter({ hasText: "Brush Lissie" });
-  await expect(item).toContainText("Due 2026-12-24");
+  await expect(item).toContainText("Due 24 Dec 2099");
   await expect(list).toContainText("Open (1)");
 
   await item
