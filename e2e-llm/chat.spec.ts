@@ -22,6 +22,10 @@ test("Lissie answers in character and the conversation survives a reload", async
   const reply = page.getByTestId("copilot-assistant-message").last();
   await expect(reply).not.toBeEmpty({ timeout: 60_000 });
 
+  // Reload only after the run has finished, as a person would.
+  await expect(page.getByTestId("copilot-loading-cursor")).toHaveCount(0, {
+    timeout: 60_000,
+  });
   await page.reload();
   await expect(page.getByTestId("copilot-user-message").first()).toContainText(
     "capital of France",

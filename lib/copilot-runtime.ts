@@ -46,9 +46,17 @@ function guard(userId: string): CopilotRuntimeHooks["onBeforeHandler"] {
         const body = (await request
           .clone()
           .json()
-          .catch(() => null)) as { threadId?: unknown } | null;
-        if (route.agentId === "lissie" && body?.threadId === ownThread) return;
-        break;
+          .catch(() => null)) as { threadId?: unknown; tools?: unknown } | null;
+        if (route.agentId !== "lissie" || body?.threadId !== ownThread) break;
+        if (route.method === "agent/connect") return;
+        // Client-declared tools are merged after Lissie's own, so a browser could shadow
+        // addTodo with a tool of the same name. Lissie only uses her server-side tools.
+        return new Request(request.url, {
+          method: request.method,
+          headers: request.headers,
+          body: JSON.stringify({ ...body, tools: [] }),
+          signal: request.signal,
+        });
       }
     }
     notFound();

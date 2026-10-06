@@ -52,14 +52,14 @@ around it. Hexagonal (ports and adapters), without the ceremony.
 - **REST** (`/api/todos`): for non-browser clients. Bearer token or session cookie,
   401 `unauthorized` without either, 404 `todo-not-found`, 400 `validation-failed`.
 - **CLI** (`cli/`): a client of the REST API, never of the database.
-- **Agent tools** (later): call the service directly. The user id comes from the
+- **Agent tools** (`lib/lissie-tools.ts`): call the service directly. The user id comes from the
   server session, never from a tool argument the model fills in.
 - **MCP**: over stdio inside the CLI (a REST client again), over HTTP inside the app
   (calls the service, like the REST routes).
 
 ## Where it lives
 
-- Built so far: the service, the contract, the REST adapter, the CLI, and Lissie's chat on `/` (see `agent.md`), which can't see todos yet; agent tools and MCP don't exist yet.
+- Built so far: the service, the contract, the REST adapter, the CLI, and Lissie with her agent tools (`lib/lissie-tools.ts`, see `agent.md`); MCP doesn't exist yet.
 - Service: `lib/todo-service.ts` (`listTodos`, `getTodo`, `addTodo`, `updateTodo`, `deleteTodo`, `TodoError`).
 - Table: `lib/todo-schema.ts`, re-exported from `lib/schema.ts`; migrations under `drizzle/`.
 - Contract: `contract/src/index.ts`, imported as `@todo-cat/contract`.

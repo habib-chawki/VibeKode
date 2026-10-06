@@ -9,6 +9,19 @@
 - The browser talks to her through CopilotKit (`app/lissie-chat.tsx`) over AG-UI; `app/api/copilotkit/[[...slug]]/route.ts` hands every request to `handleCopilotRequest` in `lib/copilot-runtime.ts`.
 - Versions are pinned exactly (`@mastra/*`, `@ag-ui/*`, `@copilotkit/*`): this three-package handshake changes monthly; read the `mastra` and `copilotkit` skills and the installed sources before changing any of them.
 
+## Tools
+
+- `lib/lissie-tools.ts`: `listTodos`, `addTodo`, `setTodoDone`, one more thin adapter on the todo service (no second copy of a query); input schemas are the contract's where one exists.
+- Each tool takes the user from Mastra's reserved `mastra__resourceId` request-context key (`sessionUser`), set per request in `lib/copilot-runtime.ts`; no tool has a user argument, and a `userId` the model invents is stripped by the schema and ignored.
+- The browser's AG-UI `context` lands under the `ag-ui` key and can't set the user; client-declared `tools` are emptied by the guard, because Mastra merges them after Lissie's own and a browser could otherwise shadow `addTodo`.
+- Service errors come back as `{ error: { code, message } }` results, so Lissie can say "can't find it" instead of failing the run.
+- Her instructions (`LISSIE_INSTRUCTIONS`) say when to use each tool and to comment on every add and every done; today's date is appended per run (server time zone, not the user's).
+
+## In the browser
+
+- `app/tool-call-line.tsx` renders every tool call as one line (`✓ Added "…"`, `✓ Done: "…"`), live and after a replay; CopilotKit draws nothing for a tool without a renderer, so the `"*"` renderer is required.
+- `app/todo-sidebar.tsx` is a read-only list from `GET /api/todos`, refreshed on every non-list tool result and at the end of each run (`useAgent` + `agent.subscribe`); Lissie is the browser's write path for now.
+
 ## Memory scoping is authorization
 
 - The user comes from `getUserId` (cookie or bearer) before the runtime sees the request: no user, 401.
@@ -26,13 +39,16 @@
 ## History after a restart
 
 - The runtime's default runner keeps thread events in process memory only; after a restart `connect` would replay nothing although Mastra still remembers.
-- `MemoryBackedRunner` falls back to one `MESSAGES_SNAPSHOT` built from Mastra memory (`loadLissieHistory`), keeping Mastra's message ids so `@ag-ui/mastra` recognises re-sent history and doesn't store it twice.
+- `MemoryBackedRunner` falls back to one `MESSAGES_SNAPSHOT` built from Mastra memory (`loadLissieHistory`), tool calls and results included.
+- The conversion walks each stored message's parts and uses the ids `@ag-ui/mastra` streams live (`<id>`, `<toolCallId>-result`, `<id>-agui-text`…), so re-sent history is recognised and not stored twice.
 
 ## Testing
 
 - Unit and integration tests use AI SDK's `MockLanguageModelV3` via `setLissieModelForTests`: no key, no cost, deterministic.
-- `e2e/chat.spec.ts` loads the chat and calls the runtime through the real Next.js server.
-- `npm run test:chat` (`e2e-llm/`, `playwright.llm.config.mts`) calls the real model; it's slow, non-deterministic and paid, so it stays out of the QA script and CI, and skips without a key.
+- `lib/lissie-tools.test.ts` runs the executors per user; `lib/lissie-tool-calls.test.ts` drives a tool-calling fake model through the runtime (TOOL_CALL_* events, an invented `userId`, a shadowing client tool, replay).
+- `e2e/chat.spec.ts` loads the chat and sidebar and calls the runtime through the real Next.js server.
+- `npm run test:chat` (`e2e-llm/`, `playwright.llm.config.mts`) calls the real model (a reply survives a reload; "add buy milk" reaches the sidebar); it's slow, non-deterministic and paid, so it stays out of the QA script and CI, and skips without a key.
+- Reload only after a run has finished (no `copilot-loading-cursor`); a reload mid-run races the replay.
 
 ## Gotchas
 
