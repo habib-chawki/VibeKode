@@ -54,6 +54,7 @@
 
 - `new Request(request, …)` throws on Next's `NextRequest` in route handlers (`Cannot read private member #state`) but works in Vitest, so the stripped request is built from its parts and only the e2e test catches a regression.
 - CopilotKit's dark styles key on a `.dark` class while the app follows the OS: `app/lissie-chat.tsx` sets `.dark` on the chat wrapper from `prefers-color-scheme`, and `app/globals.css` maps CopilotKit's tokens onto the app's palette; tests don't see contrast, so check screenshots in both modes after touching either.
+- `app/globals.css` widens CopilotKit's `cpk:max-w-3xl` conversation wrapper to 56rem; it targets a vendor class name, so recheck the width after a CopilotKit upgrade.
 - In dev, CopilotKit's inspector bubble says "Failed to load threads": the guard denies `/threads` on purpose.
 - With an explicit `threadId`, CopilotChat never shows its welcome screen; two tabs running at once collide ("Thread already running").
 - `COPILOTKIT_TELEMETRY_DISABLED=true` (in `.env.example`, and Vitest's env) turns off the runtime's telemetry.
