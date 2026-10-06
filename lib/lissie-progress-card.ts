@@ -1,9 +1,8 @@
+import type { TodoProgress } from "@todo-cat/contract";
 import { LISSIE_CATALOG_ID } from "./lissie-catalog";
 
-// The progress card showProgress (lib/lissie-progress.ts) draws: an A2UI v0.9 surface
+// The progress card showProgress (lib/lissie-tools.ts) draws: an A2UI v0.9 surface
 // from a fixed component tree. Pure, so tests can render it without a database.
-
-export type TodoProgress = { total: number; done: number; open: number };
 
 export const PROGRESS_SURFACE_ID = "todo-progress";
 

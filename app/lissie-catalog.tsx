@@ -6,7 +6,7 @@ import {
   type ComponentRenderer,
   createCatalog,
 } from "@copilotkit/a2ui-renderer";
-import { ProgressBar } from "@/components/progress-bar";
+import { ProgressBar } from "@/components/ui/progress-bar";
 import {
   LISSIE_CATALOG_ID,
   type LissieCatalogProps,
@@ -33,8 +33,10 @@ const renderers: {
   ),
 };
 
-// Module level: one stable catalog for the provider. The casts bridge two copies of zod
-// 3 (ours via zod/v3, the renderer's own), equal at runtime but distinct to TypeScript.
+// Module level: one stable catalog for the provider. The renderers are type-checked
+// above against props derived from the definitions, so drift fails typecheck. The casts
+// only cross the library boundary: its zod 3 copy differs from ours (zod/v3) to
+// TypeScript alone, and its CatalogRenderers types bound props as unresolved bindings.
 export const lissieCatalog = createCatalog(
   lissieCatalogDefinitions as unknown as CatalogDefinitions,
   renderers as unknown as CatalogRenderers<CatalogDefinitions>,

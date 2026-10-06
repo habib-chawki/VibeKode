@@ -11,17 +11,17 @@
 
 ## Tools
 
-- `lib/lissie-tools.ts`: `listTodos`, `addTodo`, `setTodoDone`, one more thin adapter on the todo service (no second copy of a query); input schemas are the contract's where one exists.
+- `lib/lissie-tools.ts`: `listTodos`, `addTodo`, `setTodoDone`, `showProgress`, one more thin adapter on the todo service (no second copy of a query); input schemas are the contract's where one exists.
 - Each tool takes the user from Mastra's reserved `mastra__resourceId` request-context key (`sessionUser`), set per request in `lib/copilot-runtime.ts`; no tool has a user argument, and a `userId` the model invents is stripped by the schema and ignored.
 - The browser's AG-UI `context` lands under the `ag-ui` key and can't set the user; client-declared `tools` are emptied by the guard, because Mastra merges them after Lissie's own and a browser could otherwise shadow `addTodo`.
 - Service errors come back as `{ error: { code, message } }` results, so Lissie can say "can't find it" instead of failing the run.
-- `showProgress` (`lib/lissie-progress.ts`, registered in `lib/lissie.ts`) counts the list through the service and returns a card as A2UI operations; `toModelOutput` hands the model only `{ total, done, open }`.
+- `showProgress` counts the list with the service's `getProgress` and returns a card as A2UI operations; `toModelOutput` hands the model only `{ total, done, open }` (or the error).
 - Her instructions (`LISSIE_INSTRUCTIONS`) say when to use each tool and to comment on every add and every done; today's date is appended per run (server time zone, not the user's).
 
 ## In the browser
 
-- `app/tool-call-line.tsx` renders every tool call as one line (`✓ Added "…"`, `✓ Done: "…"`), live and after a replay; CopilotKit draws nothing for a tool without a renderer, so the `"*"` renderer is required.
-- `app/todo-list.tsx` (see `ui.md`) refetches on every non-list tool result and at the end of each run (`useAgent` + `agent.subscribe`), so Lissie's changes show up in the list.
+- `app/tool-call-line.tsx` renders every tool call as one line (`✓ Added "…"`, `✓ Done: "…"`, text in `app/tool-call-text.ts`), live and after a replay; CopilotKit draws nothing for a tool without a renderer, so the `"*"` renderer is required.
+- `app/todo-list.tsx` (see `ui.md`) refetches on every result of a tool not in its `READ_ONLY_TOOLS` and at the end of each run (`useAgent` + `agent.subscribe`), so Lissie's changes show up in the list.
 
 ## Cards: A2UI, fixed schema only
 
@@ -30,7 +30,7 @@
 - The catalog is the basic one plus ours (`lib/lissie-catalog.ts` definitions, `app/lissie-catalog.tsx` renderers): `ProgressBar`, and a `Card` in the app's palette because the basic one is hard-coded white.
 - No generated surfaces: `injectA2UITool: false` on both the runtime's `a2ui` config and `MastraAgent`; without it a request's `forwardedProps` (`a2uiCatalogAvailable`, `injectA2UITool`) adds `render_a2ui` or a `generate_a2ui` sub-agent on our key, and `lib/lissie-progress-run.test.ts` checks both.
 - The provider gets the catalog with `includeSchema: false`: no catalog schema or generation guidelines are sent, since nothing generates UI.
-- Catalog definitions use `zod/v3`: the binder reads v3 internals to find bindable props, and a zod 4 schema renders the raw `{ path }`; the two zod 3 copies differ only to TypeScript, hence one cast in `app/lissie-catalog.tsx`.
+- Catalog definitions use `zod/v3`: the binder reads v3 internals to find bindable props, and a zod 4 schema renders the raw `{ path }`; renderer props are derived from the definitions (`LissieCatalogProps`), so drift fails typecheck; the casts in `app/lissie-catalog.tsx` only bridge the renderer's own zod 3 copy and its unresolved-binding prop types.
 - `@copilotkit/a2ui-renderer` and `@a2ui/web_core` are pinned to the versions `@copilotkit/react-core` ships with; upgrade them together.
 
 ## Memory scoping is authorization
@@ -57,7 +57,7 @@
 ## Testing
 
 - Unit and integration tests use AI SDK's `MockLanguageModelV3` via `setLissieModelForTests`: no key, no cost, deterministic.
-- `lib/lissie-tools.test.ts` runs the executors per user; `lib/lissie-progress.test.ts` checks the card's operations against the A2UI schema and the catalog, and its numbers against the rows; `app/lissie-catalog.test.tsx` renders the card through the real catalog; `lib/lissie-tool-calls.test.ts` drives a tool-calling fake model through the runtime (TOOL_CALL_* events, an invented `userId`, a shadowing client tool, replay).
+- `lib/lissie-tools.test.ts` runs the executors per user; `lib/lissie-progress-card.test.ts` checks the card's operations against the A2UI schema and the catalog, and its numbers against the rows; `app/lissie-catalog.test.tsx` renders the card through the real catalog; `lib/lissie-tool-calls.test.ts` drives a tool-calling fake model through the runtime (TOOL_CALL_* events, an invented `userId`, a shadowing client tool, replay).
 - `e2e/chat.spec.ts` loads the chat and sidebar and calls the runtime through the real Next.js server.
 - `npm run test:chat` (`e2e-llm/`, `playwright.llm.config.mts`) calls the real model (a reply survives a reload; "add buy milk" reaches the sidebar); it's slow, non-deterministic and paid, so it stays out of the QA script and CI, and skips without a key.
 - Reload only after a run has finished (no `copilot-loading-cursor`); a reload mid-run races the replay.

@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { TodoSchema } from "@todo-cat/contract";
+import { TodoProgressSchema, TodoSchema } from "@todo-cat/contract";
 import type { TestHelpers } from "better-auth/plugins";
 import {
   afterAll,
@@ -70,6 +70,27 @@ describe("per-user isolation", () => {
     const todo = await service.addTodo(alice, { title: "Feed Lissie" });
     await expectNotFound(service.deleteTodo(bob, todo.id));
     expect(await service.getTodo(alice, todo.id)).toEqual(todo);
+  });
+
+  test("progress counts only the user's own todos", async () => {
+    const mine = await service.addTodo(alice, { title: "Feed Lissie" });
+    await service.updateTodo(alice, mine.id, { done: true });
+    await service.addTodo(alice, { title: "Brush Lissie" });
+    const theirs = await service.addTodo(bob, { title: "Bob's errand" });
+    await service.updateTodo(bob, theirs.id, { done: true });
+    await service.addTodo(bob, { title: "Bob's other errand" });
+    await service.addTodo(bob, { title: "Bob's third errand" });
+
+    expect(await service.getProgress(alice)).toEqual({
+      total: 2,
+      done: 1,
+      open: 1,
+    });
+    expect(await service.getProgress(bob)).toEqual({
+      total: 3,
+      done: 1,
+      open: 2,
+    });
   });
 
   test("an unknown id gives the same error as someone else's", async () => {
@@ -217,5 +238,34 @@ describe("list", () => {
       "undated, newer",
       "finished",
     ]);
+  });
+});
+
+describe("progress", () => {
+  test("an empty list is zero of zero", async () => {
+    const progress = await service.getProgress(alice);
+    expect(TodoProgressSchema.parse(progress)).toEqual(progress);
+    expect(progress).toEqual({ total: 0, done: 0, open: 0 });
+  });
+
+  test("counts done and open, and follows reopening", async () => {
+    const todos = await Promise.all(
+      ["one", "two", "three"].map((title) => service.addTodo(alice, { title })),
+    );
+    await service.updateTodo(alice, todos[0].id, { done: true });
+    await service.updateTodo(alice, todos[1].id, { done: true });
+    expect(await service.getProgress(alice)).toEqual({
+      total: 3,
+      done: 2,
+      open: 1,
+    });
+
+    await service.updateTodo(alice, todos[1].id, { done: false });
+    await service.deleteTodo(alice, todos[2].id);
+    expect(await service.getProgress(alice)).toEqual({
+      total: 2,
+      done: 1,
+      open: 1,
+    });
   });
 });

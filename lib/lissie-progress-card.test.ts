@@ -13,12 +13,10 @@ import { setUpTestDatabase } from "./test-support";
 // showProgress on a temp database: well-formed A2UI for Lissie's catalog, numbers that
 // match the user's rows, and a component tree that never carries a number itself.
 
-let progress: typeof import("./lissie-progress");
+let tools: typeof import("./lissie-tools");
 let service: typeof import("./todo-service");
 let helpers: TestHelpers;
 let tearDown: () => void;
-let alice: string;
-let bob: string;
 
 type Component = { id: string; component: string } & Record<string, unknown>;
 type Operation = {
@@ -36,11 +34,19 @@ type Result = {
 
 beforeAll(async () => {
   ({ helpers, tearDown } = await setUpTestDatabase());
-  progress = await import("./lissie-progress");
+  tools = await import("./lissie-tools");
   service = await import("./todo-service");
-  alice = (await helpers.saveUser(helpers.createUser({ name: "Alice" }))).id;
-  bob = (await helpers.saveUser(helpers.createUser({ name: "Bob" }))).id;
 });
+
+/** A new user with these todos, the first `done` of them done: each test seeds its own. */
+async function userWith(titles: string[], done = 0): Promise<string> {
+  const { id } = await helpers.saveUser(helpers.createUser({ name: "Cat" }));
+  for (const [index, title] of titles.entries()) {
+    const todo = await service.addTodo(id, { title });
+    if (index < done) await service.updateTodo(id, todo.id, { done: true });
+  }
+  return id;
+}
 
 afterAll(() => tearDown?.());
 
@@ -48,7 +54,7 @@ afterAll(() => tearDown?.());
 async function showProgressAs(userId: string): Promise<Result> {
   const requestContext = new RequestContext();
   requestContext.set(MASTRA_RESOURCE_ID_KEY, userId);
-  const execute = progress.showProgressTool.execute;
+  const execute = tools.showProgressTool.execute;
   if (!execute) throw new Error("tool without execute");
   return (await execute({} as never, { requestContext } as never)) as Result;
 }
@@ -60,7 +66,7 @@ const opOf = <K extends keyof Operation>(ops: Operation[], key: K) => {
 };
 
 test("the operations are well-formed A2UI v0.9 for Lissie's catalog", async () => {
-  await service.addTodo(alice, { title: "Buy milk" });
+  const alice = await userWith(["Buy milk"]);
   const { a2ui_operations: ops } = await showProgressAs(alice);
 
   expect(() => A2uiMessageListSchema.parse(ops)).not.toThrow();
@@ -90,11 +96,8 @@ test("the operations are well-formed A2UI v0.9 for Lissie's catalog", async () =
 });
 
 test("the numbers match the session user's rows, and only theirs", async () => {
-  const milk = (await service.listTodos(alice))[0];
-  await service.updateTodo(alice, milk.id, { done: true });
-  await service.addTodo(alice, { title: "Feed the cat" });
-  await service.addTodo(alice, { title: "Vacuum", dueDate: "2026-10-09" });
-  await service.addTodo(bob, { title: "Bob's secret" });
+  const alice = await userWith(["Buy milk", "Feed the cat", "Vacuum"], 1);
+  await userWith(["Bob's secret", "Bob's errand"], 2);
   const rows = await service.listTodos(alice, { status: "all" });
   const expected = {
     total: rows.length,
@@ -114,8 +117,10 @@ test("the numbers match the session user's rows, and only theirs", async () => {
 });
 
 test("the tree carries bindings, never numbers", async () => {
-  const forAlice = await showProgressAs(alice);
-  const forBob = await showProgressAs(bob);
+  const forAlice = await showProgressAs(
+    await userWith(["Buy milk", "Feed the cat", "Vacuum"], 1),
+  );
+  const forBob = await showProgressAs(await userWith(["Bob's secret"]));
   expect(forBob).toMatchObject({ total: 1, done: 0, open: 1 });
   const tree = (r: Result) => opOf(r.a2ui_operations, "updateComponents");
   // Different lists, identical trees: the numbers live in the data model only.
@@ -135,9 +140,18 @@ test("the tree carries bindings, never numbers", async () => {
 });
 
 test("the model gets the numbers, not the component tree", async () => {
+  const alice = await userWith(["Buy milk", "Feed the cat", "Vacuum"], 1);
   const result = await showProgressAs(alice);
-  expect(progress.showProgressTool.toModelOutput?.(result)).toEqual({
+  expect(tools.showProgressTool.toModelOutput?.(result)).toEqual({
     type: "json",
     value: { total: 3, done: 1, open: 2 },
+  });
+});
+
+test("a service error reaches the model as an error, not a card", () => {
+  const error = { code: "todo-not-found", message: "Todo not found." };
+  expect(tools.showProgressTool.toModelOutput?.({ error } as never)).toEqual({
+    type: "json",
+    value: { error },
   });
 });

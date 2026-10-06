@@ -2,7 +2,7 @@
 import { InMemoryAgentRunner } from "@copilotkit/runtime/v2";
 import { MockLanguageModelV3, simulateReadableStream } from "ai/test";
 import type { TestHelpers } from "better-auth/plugins";
-import { afterAll, beforeAll, expect, test } from "vitest";
+import { afterAll, beforeAll, beforeEach, expect, test } from "vitest";
 import { setUpTestDatabase } from "./test-support";
 
 // showProgress through the real runtime, with a fake model that calls it and then
@@ -14,7 +14,7 @@ let lissie: typeof import("./lissie");
 let service: typeof import("./todo-service");
 let helpers: TestHelpers;
 let tearDown: () => void;
-let alice: { id: string; token: string };
+type User = { id: string; token: string };
 
 const finish = {
   type: "finish",
@@ -67,15 +67,20 @@ beforeAll(async () => {
   service = await import("./todo-service");
   lissie.setLissieModelForTests(progressModel);
   ({ handleCopilotRequest: handle } = await import("./copilot-runtime"));
-  const user = await helpers.saveUser(helpers.createUser({ name: "alice" }));
-  alice = {
-    id: user.id,
-    token: (await helpers.login({ userId: user.id })).token,
-  };
-  const milk = await service.addTodo(alice.id, { title: "Buy milk" });
-  await service.updateTodo(alice.id, milk.id, { done: true });
-  await service.addTodo(alice.id, { title: "Feed the cat" });
 });
+
+beforeEach(() => {
+  seen.length = 0;
+});
+
+/** A new signed-in user with one todo done and one open: each test seeds its own. */
+async function userWithTwoTodos(): Promise<User> {
+  const { id } = await helpers.saveUser(helpers.createUser({ name: "alice" }));
+  const milk = await service.addTodo(id, { title: "Buy milk" });
+  await service.updateTodo(id, milk.id, { done: true });
+  await service.addTodo(id, { title: "Feed the cat" });
+  return { id, token: (await helpers.login({ userId: id })).token };
+}
 
 afterAll(() => tearDown?.());
 
@@ -89,7 +94,7 @@ type Event = {
 };
 
 /** A run as the browser sends it, here also asking for every A2UI generation flag. */
-async function runEvents(): Promise<Event[]> {
+async function runEvents(alice: User): Promise<Event[]> {
   const response = await handle(
     new Request("http://localhost:3000/api/copilotkit/agent/lissie/run", {
       method: "POST",
@@ -118,7 +123,7 @@ async function runEvents(): Promise<Event[]> {
 }
 
 test("the card reaches the browser as an A2UI surface, with no extra tool", async () => {
-  const events = await runEvents();
+  const events = await runEvents(await userWithTwoTodos());
 
   const call = events.find((e) => e.type === "TOOL_CALL_START");
   expect(call?.toolCallName).toBe("showProgress");
@@ -156,6 +161,8 @@ test("the card reaches the browser as an A2UI surface, with no extra tool", asyn
 });
 
 test("the card survives the history replay after a restart", async () => {
+  const alice = await userWithTwoTodos();
+  await runEvents(alice);
   new InMemoryAgentRunner().clearThreads();
   const history = await lissie.loadLissieHistory(alice.id);
   const index = history.findIndex((m) => m.role === "tool");

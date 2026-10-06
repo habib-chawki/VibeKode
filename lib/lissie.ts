@@ -4,7 +4,6 @@ import { Agent } from "@mastra/core/agent";
 import { LibSQLStore } from "@mastra/libsql";
 import { Memory } from "@mastra/memory";
 import { db } from "./db";
-import { showProgressTool } from "./lissie-progress";
 import { lissieTools } from "./lissie-tools";
 
 // Lissie: the user's cat, who keeps their to-do list. A Mastra agent with memory in our
@@ -62,7 +61,7 @@ function createLissie(model: LissieModel): Agent {
     // Evaluated on every run, so the date is never stale.
     instructions: () => `${LISSIE_INSTRUCTIONS}\n\nToday is ${today()}.`,
     model,
-    tools: { ...lissieTools, showProgress: showProgressTool },
+    tools: lissieTools,
     memory: new Memory({
       // Reuse lib/db.ts's client: one connection, one place that interprets DATABASE_URL.
       storage: new LibSQLStore({ id: "lissie-memory", client: db.$client }),

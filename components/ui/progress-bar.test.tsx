@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { expect, test } from "vitest";
-import { ProgressBar } from "./progress-bar";
+import { ProgressBar, progressPercent } from "./progress-bar";
 
 const fill = (bar: HTMLElement) =>
   (bar.firstElementChild as HTMLElement).style.width;
@@ -27,4 +27,18 @@ test("ProgressBar stays empty for an empty list and never overflows", () => {
 
   rerender(<ProgressBar value={Number.NaN} max={4} label="Done" />);
   expect(fill(bar)).toBe("0%");
+});
+
+test("only an empty count reads 0% and only a complete one 100%", () => {
+  expect(progressPercent(199, 200)).toBe(99);
+  expect(progressPercent(1, 201)).toBe(1);
+  expect(progressPercent(1, 1000)).toBe(1);
+  expect(progressPercent(999, 1000)).toBe(99);
+  expect(progressPercent(0, 200)).toBe(0);
+  expect(progressPercent(200, 200)).toBe(100);
+  expect(progressPercent(1, 3)).toBe(33);
+  expect(progressPercent(2, 3)).toBe(67);
+
+  render(<ProgressBar value={199} max={200} label="Almost" />);
+  expect(fill(screen.getByRole("progressbar", { name: "Almost" }))).toBe("99%");
 });

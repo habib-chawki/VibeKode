@@ -4,12 +4,12 @@ import {
   useA2UIActions,
 } from "@copilotkit/a2ui-renderer";
 import { render, screen } from "@testing-library/react";
+import type { TodoProgress } from "@todo-cat/contract";
 import { useEffect } from "react";
 import { expect, test } from "vitest";
 import {
   PROGRESS_SURFACE_ID,
   progressOperations,
-  type TodoProgress,
 } from "@/lib/lissie-progress-card";
 import { lissieCatalog } from "./lissie-catalog";
 

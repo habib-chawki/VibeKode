@@ -14,13 +14,13 @@ Lissie's desk, where every todo is one paw-swipe from the floor. Chosen with the
 
 - Product context for design work (users, Lissie's voice, principles): `PRODUCT.md` at the repo root, read by the `impeccable` skill.
 - Tokens: `app/globals.css` (`:root` for light, the `prefers-color-scheme: dark` block for dark), exposed to Tailwind via `@theme inline` (`bg-paper`, `text-fur`, `accent-eye`, `text-nose`…).
-- Shared pieces: `components/ui/` (`Button`, `TextField`, `FormError`, `TextLink`); `components/lissie-says.tsx` is the auth and device pages' layout.
+- Shared pieces: `components/ui/` (`Button`, `TextField`, `FormError`, `TextLink`, `ProgressBar`: ink on a fur track); `components/lissie-says.tsx` is the auth and device pages' layout.
 - Home: `app/page.tsx` (header with the `todo·cat` wordmark), `app/lissie-chat.tsx` (provider, chat, layout), `app/todo-list.tsx` (the list), `app/tool-call-line.tsx` (tool-call lines).
 
 ## The list
 
 - `app/todo-list.tsx` is a client of the REST adapter (`/api/todos`), like the CLI: add with an optional due date, check off and reopen (optimistic, then refetched), delete after an inline "Delete it for good?" confirmation.
-- It refetches on every non-list Lissie tool result and at the end of each run, so her changes and the user's stay in one list.
+- It refetches on every Lissie tool result except the read-only ones (`READ_ONLY_TOOLS`) and at the end of each run, so her changes and the user's stay in one list.
 - `e2e/list.spec.ts` covers add, check off, reopen, and delete with its confirmation.
 
 ## CopilotKit styling gotchas
