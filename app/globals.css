@@ -36,3 +36,28 @@ body {
   background: var(--paper);
   color: var(--ink);
 }
+
+/* Lissie's chat in the app's palette. CopilotKit switches to its dark colors only on a
+   .dark class, while this app follows the OS setting; mapping its tokens onto ours makes
+   both modes follow the OS. */
+.lissie-chat,
+.lissie-chat [data-copilotkit] {
+  --background: var(--surface);
+  --foreground: var(--ink);
+  --card: var(--surface);
+  --card-foreground: var(--ink);
+  --popover: var(--surface);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--paper);
+  --secondary: var(--paper);
+  --secondary-foreground: var(--ink);
+  --muted: var(--paper);
+  --muted-foreground: var(--fur);
+  --accent: var(--paper);
+  --accent-foreground: var(--ink);
+  --border: color-mix(in oklab, var(--fur) 35%, transparent);
+  --input: color-mix(in oklab, var(--fur) 35%, transparent);
+  --ring: var(--eye);
+  --cpk-font-sans: var(--font-geist-sans);
+}

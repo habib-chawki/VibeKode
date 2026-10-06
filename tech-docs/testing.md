@@ -5,6 +5,7 @@
 - The harness existed before any feature, so every feature arrives with its tests and agents get a feedback loop from the first change.
 - Vitest runs unit and integration tests next to the code (`*.test.ts(x)`): jsdom by default for components, `// @vitest-environment node` for database, auth, route handler and CLI tests.
 - Playwright runs end-to-end tests from `e2e/` in Chromium only, against a dev server it starts itself.
+- Tests that call the real model live in `e2e-llm/` and run only via `npm run test:chat`: slow, non-deterministic and paid, so never in QA or CI.
 - Async Server Components (like `app/page.tsx`) can't render in Vitest; cover them with an e2e test instead.
 - Temp databases come from `lib/test-support.ts` (see `database.md`); a test that can't fail proves nothing, so break the code once to see a new test go red.
 

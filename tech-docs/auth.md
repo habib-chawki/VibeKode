@@ -12,7 +12,7 @@
 ## The one session seam
 
 - `lib/session.ts` is the only code that reads sessions: `getCurrentUser(request | headers)` and `getUserId(request | headers)` return the user (or its id) for a session cookie or a bearer token, else `null`.
-- Every adapter uses it: pages now, REST, agent tools and MCP later; nothing else calls `auth.api.getSession`.
+- Every adapter uses it: pages, REST, the CopilotKit runtime (`lib/copilot-runtime.ts`), and agent tools and MCP later; nothing else calls `auth.api.getSession`.
 - Pages check the session on the server (`app/page.tsx` redirects to `/login`); client-side state is only UX, never the gate.
 - `/login` and `/signup` take `?next=` (local paths only, `lib/safe-next.ts`) and send signed-in users there, so `/device` survives the detour through sign-in.
 - `/device` follows RFC 8628's approval rules: it shows the client, the account and the code, needs an explicit Approve or Deny, and warns against codes sent by someone else.

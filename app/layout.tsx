@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, Geist } from "next/font/google";
+// CopilotKit's prebuilt styles first, so the app's theme can override them.
+import "@copilotkit/react-core/v2/styles.css";
 import "./globals.css";
 
 const geistSans = Geist({

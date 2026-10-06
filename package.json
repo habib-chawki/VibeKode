@@ -17,17 +17,27 @@
     "db:migrate": "drizzle-kit migrate",
     "db:reset": "node scripts/db-reset.mjs && drizzle-kit migrate",
     "auth:generate": "auth generate --config ./auth.config.mts --output ./lib/auth-schema.ts --yes && biome check --write lib/auth-schema.ts",
-    "db:seed": "tsx --conditions=react-server scripts/db-seed.mts"
+    "db:seed": "tsx --conditions=react-server scripts/db-seed.mts",
+    "test:chat": "playwright test -c playwright.llm.config.mts"
   },
   "dependencies": {
+    "@ag-ui/client": "1.0.1",
+    "@ag-ui/core": "1.0.1",
+    "@ag-ui/mastra": "1.1.6",
     "@better-auth/drizzle-adapter": "1.7.7",
+    "@copilotkit/react-core": "1.77.0",
+    "@copilotkit/runtime": "1.77.0",
     "@libsql/client": "^0.18.0",
+    "@mastra/core": "1.74.0",
+    "@mastra/libsql": "1.25.0",
+    "@mastra/memory": "1.35.0",
     "@todo-cat/contract": "0.1.0",
     "better-auth": "1.7.7",
     "drizzle-orm": "1.0.0-rc.4",
     "next": "16.3.8",
     "react": "19.3.0",
     "react-dom": "19.3.0",
+    "rxjs": "7.8.1",
     "server-only": "^0.0.1"
   },
   "devDependencies": {
@@ -40,6 +50,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
+    "ai": "6.0.301",
     "auth": "1.7.7",
     "drizzle-kit": "1.0.0-rc.4",
     "jsdom": "^30.1.2",

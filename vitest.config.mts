@@ -16,6 +16,7 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
+    env: { COPILOTKIT_TELEMETRY_DISABLED: "true" },
     setupFiles: ["./vitest.setup.ts"],
     include: ["**/*.test.{ts,tsx}"],
     exclude: ["**/node_modules/**", "e2e/**", ".claude/**", ".next*/**"],
