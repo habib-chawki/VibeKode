@@ -55,6 +55,7 @@ Run from the repo root; `package.json` has the full list.
 ## Working in this repo
 
 - Auto mode blocks commands that download and run third-party code (`npx skills add`, `npx impeccable install`); hand those to the human instead of working around the block.
+- Parallel agents get their own worktree (`claude --worktree <name>`, which copies `.env` via `.worktreeinclude`): run `npm install` and `npm run db:migrate` first, use your own dev port (`PORT=3101`…), and own disjoint files.
 - Stop a background `next dev` by the pid listening on its port (`ss -ltnp 'sport = :3000'`); `pkill -f 'next dev'` also kills the shell that runs it.
 
 ## Tech docs

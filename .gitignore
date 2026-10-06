@@ -76,3 +76,6 @@ next-env.d.ts
 
 # CLI build output
 /cli/dist/
+
+# Claude Code worktrees
+.claude/worktrees/
